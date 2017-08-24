@@ -1,0 +1,4 @@
+TMP_DIR="/tmp/monasca-agents-installer"
+MAKESELF_REPO="https://github.com/megastep/makeself.git"
+MAKESELF_DIR="${TMP_DIR}/makeself"
+
