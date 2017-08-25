@@ -22,17 +22,17 @@ TBD
 ## Running the installer
 
 ### Metrics agent
-Simply run the `monasca-agent.run`:
+Please use embedded help for detailed and up-to-date info:
 
 ```
-./monasca-agent.run
+./monasca-agent.run --help
 ```
 
-This will install the agent in the current directory. You may change the installtion directory by providing the 
-`--target` argument.
+To provide Keystone credentials and configure the agent using auto-detection run the following command:
 
 ```
-./monasca-agent.run --target /opt/monasca/monasca-agent
+./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
+                    --project_name <project> --keystone_url <keystone_url>
 ```
 
 ### Log agent
@@ -45,5 +45,4 @@ TBD
 - for metrics agent:
     - create installer for a specified version
     - create service files
-    - run monasca-setup
 

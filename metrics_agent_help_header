@@ -1,0 +1,8 @@
+Installs monasca-agent and runs monasca-setup
+
+Usage:
+./monasca-agent.run [makeself_arguments] -- [monasca_setup_arguments]
+
+See below for details.
+
+Monasca Setup:
