@@ -21,6 +21,7 @@ fi
 cat metrics_agent_help_header > metrics_agent_help_header.tmp
 ${MONASCA_AGENT_TMP_DIR}/bin/python ${MONASCA_AGENT_TMP_DIR}/bin/monasca-setup --help \
     >> metrics_agent_help_header.tmp
+#comment
 
 ${MAKESELF_DIR}/makeself.sh --notemp \
                             --help-header metrics_agent_help_header.tmp \
