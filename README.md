@@ -8,12 +8,17 @@ This project uses [makeself](https://github.com/megastep/makeself/) for building
 ## Creating the installer package
 
 ### Metrics agent
-Simply run
+To use the latest version of monasca-agent, simply run
 ```
-./create_metrics_agent_installer.sh
+./create_metrics_agent_installer.sh 
 ```
 
-You will end up with `monasca-agent.run` executable.
+To use a specific version of monasca-agent, add the desired version number as an argument:
+```
+./create_metrics_agent_installer.sh <version_number>
+```
+
+Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
 
 ### Log agent
 TBD
@@ -22,10 +27,10 @@ TBD
 ## Running the installer
 
 ### Metrics agent
-Please use embedded help for detailed and up-to-date info:
+Please use the embedded help for detailed and up-to-date info:
 
 ```
-./monasca-agent.run --help
+./monasca-agent-<version_number>.run --help
 ```
 
 To provide Keystone credentials and configure the agent using auto-detection run the following command:
@@ -43,6 +48,5 @@ TBD
 
 - log agent installer
 - for metrics agent:
-    - create installer for a specified version
     - create service files
 
