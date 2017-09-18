@@ -11,8 +11,9 @@ MONASCA_AGENT_TMP_DIR="${TMP_DIR}/monasca-agent"
 mkdir -p ${MONASCA_AGENT_TMP_DIR}
 
 virtualenv ${MONASCA_AGENT_TMP_DIR}
-
 ${MONASCA_AGENT_TMP_DIR}/bin/pip install monasca-agent==$MONASCA_AGENT_VERSION
+virtualenv --relocatable ${MONASCA_AGENT_TMP_DIR}
+
 cp configure_metrics_agent.sh ${MONASCA_AGENT_TMP_DIR}/bin
 
 if [ -d "${MAKESELF_DIR}" ]; then
