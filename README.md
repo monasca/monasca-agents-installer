@@ -46,7 +46,6 @@ TBD
 
 ## TODOs
 
-- log agent installer
 - for metrics agent:
     - create service files
 
