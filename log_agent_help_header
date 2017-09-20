@@ -1,0 +1,24 @@
+Generates agent.conf file and installs log agent
+
+Usage:
+./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run /
+    [makeself_arguments] -- [configure_log_agent_arguments]
+
+See below for details.
+
+Log agent Setup:
+
+    After adding any required makeself arguments to the command, add <space>--<space> followed /
+        by any of the following arguments to create a customised agent.conf file. Any argument /
+        added at the end with no switch will be considered as paths to required input files.
+
+    Options:
+        -m, --monasca_log_api_url   <monasca log api url> \
+        -k, --keystone_api_url      <keystone api url> \
+        -n, --project_name          <project name> \
+        -u, --username              <username> \
+        -p, --password              <password> \
+        -d, --user_domain_name      <user domain name> \
+        -r, --project_domain_name   <project domain name> \
+        -h, --hostname              <hostname for dimensions> \
+        <input_file_path_1> <input_file_path_2> <input_file_path_n>
