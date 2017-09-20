@@ -21,9 +21,15 @@ To use a specific version of monasca-agent, add the desired version number as an
 Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
 
 ### Log agent
-TBD
-
-
+To use default versions of `logstash` and `logstash_output_monasca_log_api`, simply run
+```
+./create_log_agent_installer.sh
+```
+You can add an argument to specify the `logstash` version, or two arguments to also specify the `logstash_output_monasca_log_api` version:
+```
+./create_log_agent_installer.sh <logstash_version> <logstash_output_monasca_log_api_version>
+```
+This will generate a new executable named: `log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run` .
 ## Running the installer
 
 ### Metrics agent
@@ -41,12 +47,30 @@ To provide Keystone credentials and configure the agent using auto-detection run
 ```
 
 ### Log agent
-TBD
-
-
+Please use the embedded help for detailed and up-to-date info:
+```
+./log-agent-<logstash_version>_<logstash_output_monsaca_log_api_version>.run --help
+```
+To create an agent configuration file (agent.conf), run
+```
+./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run
+```
+Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
+```
+./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
+    --monasca_log_api_url <monasca log api url> \
+    --keystone_auth_url <keystone authorisation url> \
+    --project_name <project name> \
+    --username <username> \
+    --password <password> \
+    --user_domain_name <user domain name> \
+    --project_domain_name <project domain name> \
+    --hostname <hostname for dimensions> \
+    <input_file_path_1> <input_file_path_2> <input_file_path_n>
+```
+Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
 ## TODOs
 
-- log agent installer
 - for metrics agent:
     - create service files
 
