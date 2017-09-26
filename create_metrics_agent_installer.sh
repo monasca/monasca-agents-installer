@@ -11,6 +11,9 @@ MONASCA_AGENT_TMP_DIR="${TMP_DIR}/monasca-agent"
 mkdir -p ${MONASCA_AGENT_TMP_DIR}
 
 virtualenv ${MONASCA_AGENT_TMP_DIR}
+if [ "${MONASCA_AGENT_VERSION}" = "1.9.1" ]; then
+    ${MONASCA_AGENT_TMP_DIR}/bin/pip install python-monascaclient==1.5.1
+fi
 ${MONASCA_AGENT_TMP_DIR}/bin/pip install monasca-agent==$MONASCA_AGENT_VERSION
 virtualenv --relocatable ${MONASCA_AGENT_TMP_DIR}
 
