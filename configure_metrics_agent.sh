@@ -13,68 +13,68 @@ generate_supervisor_config() {
     local agent_dir="/etc/monasca/agent"
     local supervisor_file="$agent_dir/supervisor.conf"
 
-    echo -e "[Unit]
-    Description=Monasca Agent
+    echo "[Unit]
+Description=Monasca Agent
 
-    [Service]
-    Type=simple
-    User=mon-agent
-    Group=mon-agent
-    Restart=on-failure
-    ExecStart=/opt/monasca-agent/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n
+[Service]
+Type=simple
+User=mon-agent
+Group=mon-agent
+Restart=on-failure
+ExecStart=/opt/monasca-agent/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n
 
-    [Install]
-    WantedBy=multi-user.targetvagrant@devstack:/etc/systemd/system$ cat /etc/monasca/agent/supervisor.conf
-    cat: /etc/monasca/agent/supervisor.conf: Permission denied
-    vagrant@devstack:/etc/systemd/system$ sudo cat /etc/monasca/agent/supervisor.conf
-    [supervisorctl]
-    serverurl = unix:///var/tmp/monasca-agent-supervisor.sock
+[Install]
+WantedBy=multi-user.targetvagrant@devstack:/etc/systemd/system$ cat /etc/monasca/agent/supervisor.conf
+cat: /etc/monasca/agent/supervisor.conf: Permission denied
+vagrant@devstack:/etc/systemd/system$ sudo cat /etc/monasca/agent/supervisor.conf
+[supervisorctl]
+serverurl = unix:///var/tmp/monasca-agent-supervisor.sock
 
-    [unix_http_server]
-    file=/var/tmp/monasca-agent-supervisor.sock
+[unix_http_server]
+file=/var/tmp/monasca-agent-supervisor.sock
 
-    [rpcinterface:supervisor]
-    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
-    [supervisord]
-    minfds = 1024
-    minprocs = 200
-    loglevel = info
-    logfile = /var/log/monasca/agent/supervisord.log
-    logfile_maxbytes = 50MB
-    nodaemon = false
-    pidfile = /var/run/monasca-agent-supervisord.pid
-    logfile_backups = 10
+[supervisord]
+minfds = 1024
+minprocs = 200
+loglevel = info
+logfile = /var/log/monasca/agent/supervisord.log
+logfile_maxbytes = 50MB
+nodaemon = false
+pidfile = /var/run/monasca-agent-supervisord.pid
+logfile_backups = 10
 
-    [program:collector]
-    command=/opt/monasca-agent/bin/monasca-collector foreground
-    stdout_logfile=NONE
-    stderr_logfile=NONE
-    priority=999
-    startsecs=2
-    user=mon-agent
-    autorestart=true
+[program:collector]
+command=/opt/monasca-agent/bin/monasca-collector foreground
+stdout_logfile=NONE
+stderr_logfile=NONE
+priority=999
+startsecs=2
+user=mon-agent
+autorestart=true
 
-    [program:forwarder]
-    command=/opt/monasca-agent/bin/monasca-forwarder
-    stdout_logfile=NONE
-    stderr_logfile=NONE
-    startsecs=3
-    priority=998
-    user=mon-agent
-    autorestart=true
+[program:forwarder]
+command=/opt/monasca-agent/bin/monasca-forwarder
+stdout_logfile=NONE
+stderr_logfile=NONE
+startsecs=3
+priority=998
+user=mon-agent
+autorestart=true
 
-    [program:statsd]
-    command=/opt/monasca-agent/bin/monasca-statsd
-    stdout_logfile=NONE
-    stderr_logfile=NONE
-    startsecs=3
-    priority=998
-    user=mon-agent
-    autorestart=true
+[program:statsd]
+command=/opt/monasca-agent/bin/monasca-statsd
+stdout_logfile=NONE
+stderr_logfile=NONE
+startsecs=3
+priority=998
+user=mon-agent
+autorestart=true
 
-    [group:monasca-agent]
-    programs=forwarder,collector,statsd" > "${tmp_conf_file}"
+[group:monasca-agent]
+programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
     echo "generate_supervisor_config written to tmp file"
 
@@ -89,23 +89,23 @@ generate_supervisor_config() {
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
 install_system_service() {
-    local tmp_service_file="/tmp/monasca-metrics-agent.service"
+    local tmp_service_file="/tmp/monasca-agent.service"
     local systemd_dir="/etc/systemd/system"
-    local systemd_file="$systemd_dir/monasca-metrics-agent.service"
+    local systemd_file="$systemd_dir/monasca-agent.service"
 
 
     echo -e "[Unit]
-    Description=Monasca Agent
+Description=Monasca Agent
 
-    [Service]
-    Type=simple
-    User=root
-    Group=root
-    Restart=on-failure
-    ExecStart=/opt/monasca-agent/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n
+[Service]
+Type=simple
+User=root
+Group=root
+Restart=on-failure
+ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 
-    [Install]
-    WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
+[Install]
+WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
 
     echo "install_system_service tmp file created"
 
@@ -114,7 +114,7 @@ install_system_service() {
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
-    sudo systemctl start monasca-metrics-agent
+    sudo systemctl start monasca-agent
     echo "install_system_service completed"
 }
 
