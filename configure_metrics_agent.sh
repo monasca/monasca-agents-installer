@@ -76,15 +76,13 @@ autorestart=true
 [group:monasca-agent]
 programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
-    echo "generate_supervisor_config written to tmp file"
-
     sudo cp -f "${tmp_conf_file}" "${supervisor_file}"
     sudo chown root:root "${supervisor_file}"
     sudo chmod 0664 "${supervisor_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_conf_file}"
 
-    echo "install_system_service completed"
+    echo "/etc/monasca/agent/supervisor.conf created"
 }
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
@@ -107,15 +105,14 @@ ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 [Install]
 WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
 
-    echo "install_system_service tmp file created"
-
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
     sudo chown root:root "${systemd_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
     sudo systemctl start monasca-agent
-    echo "install_system_service completed"
+
+    echo "/etc/systemd/system/monasca-agent.service created"
 }
 
 generate_supervisor_config
