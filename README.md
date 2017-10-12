@@ -45,6 +45,7 @@ To provide Keystone credentials and configure the agent using auto-detection run
 ./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
                     --project_name <project> --keystone_url <keystone_url>
 ```
+This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above. 
 
 ### Log agent
 Please use the embedded help for detailed and up-to-date info:
@@ -69,8 +70,3 @@ Use the following arguments to modify the default values of the`agent.conf` file
     <input_file_path_1> <input_file_path_2> <input_file_path_n>
 ```
 Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
-## TODOs
-
-- for metrics agent:
-    - create service files
-
