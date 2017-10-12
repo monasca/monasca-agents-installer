@@ -38,7 +38,7 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 priority=999
 startsecs=2
-user=mon-agent
+user=root
 autorestart=true
 
 [program:forwarder]
@@ -47,7 +47,7 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
 priority=998
-user=mon-agent
+user=root
 autorestart=true
 
 [program:statsd]
@@ -56,7 +56,7 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
 priority=998
-user=mon-agent
+user=root
 autorestart=true
 
 [group:monasca-agent]
