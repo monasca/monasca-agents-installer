@@ -13,21 +13,7 @@ generate_supervisor_config() {
     local agent_dir="/etc/monasca/agent"
     local supervisor_file="$agent_dir/supervisor.conf"
 
-    echo "[Unit]
-Description=Monasca Agent
-
-[Service]
-Type=simple
-User=mon-agent
-Group=mon-agent
-Restart=on-failure
-ExecStart=/opt/monasca-agent/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n
-
-[Install]
-WantedBy=multi-user.targetvagrant@devstack:/etc/systemd/system$ cat /etc/monasca/agent/supervisor.conf
-cat: /etc/monasca/agent/supervisor.conf: Permission denied
-vagrant@devstack:/etc/systemd/system$ sudo cat /etc/monasca/agent/supervisor.conf
-[supervisorctl]
+    echo "[supervisorctl]
 serverurl = unix:///var/tmp/monasca-agent-supervisor.sock
 
 [unix_http_server]
@@ -47,7 +33,7 @@ pidfile = /var/run/monasca-agent-supervisord.pid
 logfile_backups = 10
 
 [program:collector]
-command=/opt/monasca-agent/bin/monasca-collector foreground
+command=${BIN_DIR}/monasca-collector foreground
 stdout_logfile=NONE
 stderr_logfile=NONE
 priority=999
@@ -56,7 +42,7 @@ user=mon-agent
 autorestart=true
 
 [program:forwarder]
-command=/opt/monasca-agent/bin/monasca-forwarder
+command=${BIN_DIR}/monasca-forwarder
 stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
@@ -65,7 +51,7 @@ user=mon-agent
 autorestart=true
 
 [program:statsd]
-command=/opt/monasca-agent/bin/monasca-statsd
+command=${BIN_DIR}/monasca-statsd
 stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
