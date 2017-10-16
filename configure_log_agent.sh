@@ -30,6 +30,7 @@ install_system_service() {
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
+    sudo systemctl enable monasca-log-agent
     sudo systemctl start monasca-log-agent
 }
 
