@@ -96,6 +96,7 @@ WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
+    sudo systemctl enable monasca-agent
     sudo systemctl start monasca-agent
 
     echo "/etc/systemd/system/monasca-agent.service created"
