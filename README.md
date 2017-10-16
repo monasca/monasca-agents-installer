@@ -8,41 +8,6 @@ Additionally, the monasca-ui Horizon plugin is also supported.
 
 This project uses [makeself](https://github.com/megastep/makeself/) for building the self-extracting archive.
 
-## Creating the installer package
-
-### Metrics agent
-To use the latest version of monasca-agent, simply run
-```
-./create_metrics_agent_installer.sh 
-```
-
-To use a specific version of monasca-agent, add the desired version number as an argument:
-```
-./create_metrics_agent_installer.sh <version_number>
-```
-
-Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
-
-### Log agent
-To use default versions of `logstash` and `logstash_output_monasca_log_api`, simply run
-```
-./create_log_agent_installer.sh
-```
-You can add an argument to specify the `logstash` version, or two arguments to also specify the `logstash_output_monasca_log_api` version:
-```
-./create_log_agent_installer.sh <logstash_version> <logstash_output_monasca_log_api_version>
-```
-This will generate a new executable named: `log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run` .
-
-### Monasca-ui plugin
-
-In order to create the monasca-ui installer, you need to run the
-following command:
-```
-./create_monasca_ui_installer.sh <version_number>
-```
-
-In case the `<version_number>` is omitted, the newest one will be used.
 
 ## Keystone configuration
 
@@ -63,7 +28,7 @@ export OS_AUTH_URL=<keystone auth url>
 export OS_REGION_NAME=<region name>
 ```
 
-One can verify if the provided credentials are correct by running 
+One can verify if the provided credentials are correct by running
 a simple command, like
 
 ```
@@ -127,33 +92,35 @@ openstack endpoint create logs_v2 public http://192.168.10.6:5607/v2.0
 
 ## Running the installer
 
+Download the installer from [here](https://github.com/monasca/monasca-agents-installer/releases)
+
 ### Metrics agent
 Please use the embedded help for detailed and up-to-date info:
 
 ```
-./monasca-agent-<version_number>.run --help
+./monasca-agent-<version>.run --help
 ```
 
 To provide Keystone credentials and configure the agent using auto-detection run the following command:
 
 ```
-./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
+./monasca-agent-<version>.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
                     --project_name <project> --keystone_url <keystone_url>
 ```
-This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above. 
+This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above.
 
 ### Log agent
 Please use the embedded help for detailed and up-to-date info:
 ```
-./log-agent-<logstash_version>_<logstash_output_monsaca_log_api_version>.run --help
+./log-agent-<version>.run --help
 ```
 To create an agent configuration file (agent.conf), run
 ```
-./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run
+./log-agent-<version>.run
 ```
 Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
 ```
-./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
+./log-agent-<version>.run \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
@@ -177,11 +144,11 @@ This will extract the plugin with all the required dependencies.
 
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
-the Horizon system path. You need to find your wsgi script for Horizon 
+the Horizon system path. You need to find your wsgi script for Horizon
 and edit it adding:
 
 ```
-sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/") 
+sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/")
 ```
 
 If your deployment uses Apache server for hosting the wsgi applications,
@@ -197,7 +164,7 @@ configuration file, for example:
 WSGIScriptAlias / /srv/www/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
 ```
 
-Then it is required to enable the monasca-ui plugin. Simply create 
+Then it is required to enable the monasca-ui plugin. Simply create
 symbolic links in horizon installation pointing to the monasca-ui
 installation:
 
@@ -208,7 +175,7 @@ ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/conf/monitoring_po
       <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 
-You may also need to adjust some settings in 
+You may also need to adjust some settings in
 `<monasca_ui_dir>/lib/python2.7/site-packages/monitoring/config/local_settings.py`
 For reference please consult monasca-ui documentation.
 
@@ -216,3 +183,7 @@ After that, you need to restart the apache server:
 ```
 systemctl restart apache2
 ```
+
+## Developer Guide
+
+[Building the installer](build.md)
