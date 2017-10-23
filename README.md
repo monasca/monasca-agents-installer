@@ -138,8 +138,19 @@ To provide Keystone credentials and configure the agent using auto-detection run
 
 ```
 ./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
-                    --project_name <project> --keystone_url <keystone_url>
+                    --project_name <project> --keystone_url <keystone_url> --monasca_statsd_port <statsd_port>
 ```
+
+| Parameter             | Required | Default | Example Value   | Description |
+| --------------------- | -------- | ------- | --------------- | ----------- |
+| `username`            | yes      | `Unset` | `myuser`        | This is a required parameter that specifies the username needed to login to Keystone to get a token |
+| `password`            | yes      | `Unset` | `mypassword`    | This is a required parameter that specifies the password needed to login to Keystone to get a token |
+| `keystone_url`        | yes      | `Unset` | `http://192.168.1.5:35357/v3` | This is a required parameter that specifies the url of the keystone api for retrieving tokens. **It must be a v3 endpoint.** |
+| `project_name`        | no       | `null`  | `myproject`     | Specifies the name of the Keystone project name to store the metrics under, defaults to users default project. |
+| `monasca_statsd_port` | no       | `8125`  | `8126`          | Integer value for statsd daemon port number. **If default port number is used, set the other number (e.g. 8126) which is not used.** |
+
+For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
+
 This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above. 
 
 ### Log agent
