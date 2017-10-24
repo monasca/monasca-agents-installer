@@ -165,6 +165,7 @@ To create an agent configuration file (agent.conf), run
 Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
+    --target /opt/monasca/monasca-log-agent -- \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
@@ -175,6 +176,19 @@ Use the following arguments to modify the default values of the`agent.conf` file
     --hostname <hostname for dimensions> \
     <input_file_path_1> <input_file_path_2> <input_file_path_n>
 ```
+
+| Parameter             | Required | Default                        | Example Value                  | Description |
+| --------------------- | -------- | ------------------------------ | ------------------------------ | ----------- |
+| `monasca_log_api_url` | no       | `http://localhost:5607/v3.0`   | `http://192.168.1.6:5607/v3.0` | Monasca log api URL |
+| `keystone_auth_url`   | no       | `http://localhost/identity/v3` | `http://192.168.1.5:35357/v3`  | Kyestone api URL |
+| `project_name`        | no       | `mini-mon`                     | `myproject`                    | Keystone project name |
+| `username`            | no       | `monasca-agent`                | `myuser`                       | Keystone user name |
+| `password`            | no       | `password`                     | `mypassword`                   | Keystone password |
+| `user_domain_name`    | no       | `default`                      |                                | User domain id for username scoping |
+| `project_domain_name` | no       | `default`                      |                                | Project domain id for keystone authentication |
+| `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
+| `input_file_path_n`   | yes      | `unset`                        | `/var/log/*`                   | Input log file path |
+
 Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
 ### Monasca-ui
