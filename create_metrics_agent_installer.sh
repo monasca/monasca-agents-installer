@@ -7,6 +7,7 @@ MONASCA_AGENT_VERSION=${1:-`pip search monasca-agent | grep monasca-agent | \
                             awk '{print $2}' | sed 's|(||' | sed 's|)||'`}
 
 MONASCA_AGENT_TMP_DIR="${TMP_DIR}/monasca-agent"
+PACKAGE_LIST=("pymysql==0.7.2" "psycopg2" "libvirt-python" "lxml" "python-neutronclient==6.1.0" "python-novaclient==7.1.2")
 
 mkdir -p ${MONASCA_AGENT_TMP_DIR}
 
@@ -14,6 +15,12 @@ virtualenv ${MONASCA_AGENT_TMP_DIR}
 if [ "${MONASCA_AGENT_VERSION}" = "1.9.1" ]; then
     ${MONASCA_AGENT_TMP_DIR}/bin/pip install python-monascaclient==1.5.1
 fi
+
+# Install required packages to enable plugins
+for package in ${PACKAGE_LIST[@]}; do
+    ${MONASCA_AGENT_TMP_DIR}/bin/pip install $package
+done
+
 ${MONASCA_AGENT_TMP_DIR}/bin/pip install monasca-agent==$MONASCA_AGENT_VERSION
 virtualenv --relocatable ${MONASCA_AGENT_TMP_DIR}
 
