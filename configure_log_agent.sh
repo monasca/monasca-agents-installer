@@ -54,19 +54,19 @@ generate_config_file() {
 
     if [ -z "$FILES" ]
     then
-        echo -e "No file paths were specified for input -- The agents.conf file
+        echo -e "WARNING: No file paths were specified for input -- The agents.conf file
     was successfully created, but you may wish to re-run this command
     with any number of paths for input files at the end of your list
     of arguments"
     else
         for file in $FILES
         do
-
-        echo -e "   file {
-        #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
-            path => \"$file\"
-          }">> ${INSTALL_DIR}/conf/agent.conf
-
+            if [ ! -d $file ]; then
+                echo -e "   file {
+                #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
+                    path => \"$file\"
+                  }">> ${INSTALL_DIR}/conf/agent.conf
+            fi
         done
     fi
 
@@ -85,6 +85,14 @@ generate_config_file() {
       }
     }" >> ${INSTALL_DIR}/conf/agent.conf
 
+    if [ ! -z "$BAD_PATHS" ]; then
+        for path in $BAD_PATHS
+        do
+            echo "Warning!"
+            echo "Not a file path: $path - To select all files from directory, use an asterisk: $path*"
+        done
+    fi
+
     echo "agent.conf successfully created in $INSTALL_DIR/conf/"
 }
 
@@ -98,6 +106,7 @@ PASSWORD="password"
 USER_DOMAIN_NAME="default"
 PROJECT_DOMAIN_NAME="default"
 NO_SERVICE=false
+BAD_PATHS=""
 FILES=""
 
 # check for additional arguments in call to override default values (above)
@@ -141,6 +150,10 @@ do
         -h|--hostname)
         HOSTNAME="$2"
         shift 2
+        ;;
+        */)
+        BAD_PATHS+="$1 "
+        shift
         ;;
         *)    # unknown option
         FILES+="$1 " # save it in an array for later
