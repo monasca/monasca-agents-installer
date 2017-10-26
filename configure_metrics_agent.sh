@@ -3,6 +3,11 @@
 echo "Configuring agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=`cd $BIN_DIR/.. && pwd`
+MON_SUDUERS_FILE="/etc/sudoers.d/mon-agent"
+
+if [ ! -e ${MON_SUDUERS_FILE} ]; then
+    echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee ${MON_SUDUERS_FILE} >> /dev/null
+fi
 
 sudo mkdir -p /etc/monasca
 
@@ -96,6 +101,7 @@ WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
+    sudo systemctl enable monasca-agent
     sudo systemctl start monasca-agent
 
     echo "/etc/systemd/system/monasca-agent.service created"

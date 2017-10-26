@@ -120,9 +120,9 @@ setup:
 openstack service create --name monasca monitoring
 openstack service create --name logs logs
 openstack service create --name logs_v2 logs_v2
-openstack endpoint create monasca public http://192.168.10.6:8070/v2.0
-openstack endpoint create logs public http://192.168.10.6:5607/v3.0
-openstack endpoint create logs_v2 public http://192.168.10.6:5607/v2.0
+openstack endpoint create monasca public http://192.168.10.6:8070/v2.0 --region <Region_name>
+openstack endpoint create logs public http://192.168.10.6:5607/v3.0 --region <Region_name>
+openstack endpoint create logs_v2 public http://192.168.10.6:5607/v2.0 --region <Region_name>
 ```
 
 ## Running the installer
@@ -138,8 +138,19 @@ To provide Keystone credentials and configure the agent using auto-detection run
 
 ```
 ./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
-                    --project_name <project> --keystone_url <keystone_url>
+                    --project_name <project> --keystone_url <keystone_url> --monasca_statsd_port <statsd_port>
 ```
+
+| Parameter             | Required | Default | Example Value   | Description |
+| --------------------- | -------- | ------- | --------------- | ----------- |
+| `username`            | yes      | `Unset` | `myuser`        | This is a required parameter that specifies the username needed to login to Keystone to get a token |
+| `password`            | yes      | `Unset` | `mypassword`    | This is a required parameter that specifies the password needed to login to Keystone to get a token |
+| `keystone_url`        | yes      | `Unset` | `http://192.168.1.5:35357/v3` | This is a required parameter that specifies the url of the keystone api for retrieving tokens. **It must be a v3 endpoint.** |
+| `project_name`        | no       | `null`  | `myproject`     | Specifies the name of the Keystone project name to store the metrics under, defaults to users default project. |
+| `monasca_statsd_port` | no       | `8125`  | `8126`          | Integer value for statsd daemon port number. **If default port number is used, set the other number (e.g. 8126) which is not used.** |
+
+For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
+
 This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above. 
 
 ### Log agent
@@ -154,6 +165,7 @@ To create an agent configuration file (agent.conf), run
 Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
+    --target /opt/monasca/monasca-log-agent -- \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
@@ -165,6 +177,18 @@ Use the following arguments to modify the default values of the`agent.conf` file
     <input_file_path_1> <input_file_path_2> <input_file_path_n>
 ```
 To include all the files in a directory, use the `*` wild card (eg. `/var/log/*` ).
+
+| Parameter             | Required | Default                        | Example Value                  | Description |
+| --------------------- | -------- | ------------------------------ | ------------------------------ | ----------- |
+| `monasca_log_api_url` | no       | `http://localhost:5607/v3.0`   | `http://192.168.1.6:5607/v3.0` | Monasca log api URL |
+| `keystone_auth_url`   | no       | `http://localhost/identity/v3` | `http://192.168.1.5:35357/v3`  | Kyestone api URL |
+| `project_name`        | no       | `mini-mon`                     | `myproject`                    | Keystone project name |
+| `username`            | no       | `monasca-agent`                | `myuser`                       | Keystone user name |
+| `password`            | no       | `password`                     | `mypassword`                   | Keystone password |
+| `user_domain_name`    | no       | `default`                      |                                | User domain id for username scoping |
+| `project_domain_name` | no       | `default`                      |                                | Project domain id for keystone authentication |
+| `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
+| `input_file_path_n`   | yes      | `unset`                        | `/var/log/*`                   | Input log file path |
 
 Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
