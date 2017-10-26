@@ -176,6 +176,7 @@ Use the following arguments to modify the default values of the`agent.conf` file
     --hostname <hostname for dimensions> \
     <input_file_path_1> <input_file_path_2> <input_file_path_n>
 ```
+To include all the files in a directory, use the `*` wild card (eg. `/var/log/*` ).
 
 | Parameter             | Required | Default                        | Example Value                  | Description |
 | --------------------- | -------- | ------------------------------ | ------------------------------ | ----------- |

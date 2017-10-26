@@ -55,19 +55,21 @@ generate_config_file() {
 
     if [ -z "$FILES" ]
     then
-        echo -e "No file paths were specified for input -- The agents.conf file
+        echo -e "WARNING: No file paths were specified for input -- The agents.conf file
     was successfully created, but you may wish to re-run this command
     with any number of paths for input files at the end of your list
     of arguments"
     else
         for file in $FILES
         do
-
-        echo -e "   file {
-        #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
-            path => \"$file\"
-          }">> ${INSTALL_DIR}/conf/agent.conf
-
+            if [ ! -d $file ]; then
+                echo -e "   file {
+                #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
+                    path => \"$file\"
+                  }">> ${INSTALL_DIR}/conf/agent.conf
+            else
+                echo "$file is a directory. Only files can be monitored - skipping."
+            fi
         done
     fi
 
