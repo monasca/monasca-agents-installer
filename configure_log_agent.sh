@@ -66,6 +66,8 @@ generate_config_file() {
                 #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
                     path => \"$file\"
                   }">> ${INSTALL_DIR}/conf/agent.conf
+            else
+                echo "$file is a directory. Only files can be monitored - skipping."
             fi
         done
     fi
@@ -106,7 +108,6 @@ PASSWORD="password"
 USER_DOMAIN_NAME="default"
 PROJECT_DOMAIN_NAME="default"
 NO_SERVICE=false
-BAD_PATHS=""
 FILES=""
 
 # check for additional arguments in call to override default values (above)
@@ -150,10 +151,6 @@ do
         -h|--hostname)
         HOSTNAME="$2"
         shift 2
-        ;;
-        */)
-        BAD_PATHS+="$1 "
-        shift
         ;;
         *)    # unknown option
         FILES+="$1 " # save it in an array for later
