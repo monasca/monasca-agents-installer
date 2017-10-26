@@ -88,14 +88,6 @@ generate_config_file() {
       }
     }" >> ${INSTALL_DIR}/conf/agent.conf
 
-    if [ ! -z "$BAD_PATHS" ]; then
-        for path in $BAD_PATHS
-        do
-            echo "Warning!"
-            echo "Not a file path: $path - To select all files from directory, use an asterisk: $path*"
-        done
-    fi
-
     echo "agent.conf successfully created in $INSTALL_DIR/conf/"
 }
 
