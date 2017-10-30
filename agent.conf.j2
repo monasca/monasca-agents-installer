@@ -1,0 +1,34 @@
+input {
+{%- for input_value in input %}
+  file {
+    add_field => {{ input_value.dimensions }}
+    tags => {{ input_value.tags }}
+    path => {{ input_value.path }}
+  }
+{%- endfor %}
+}
+
+filter {
+{%- for filter_value in filter %}
+  if {{ filter_value.type }} in [tags] {
+    {{ filter_value.name }} {
+      negate => {{ filter_value.negate }}
+      pattern => {{ filter_value.pattern }}
+      what => {{ filter_value.what }}
+    }
+  }
+{%- endfor %}
+}
+
+output {
+  monasca_log_api {
+    monasca_log_api_url => "{{ output.monasca_log_api_url }}"
+    keystone_api_url => "{{ output.keystone_api_url }}"
+    project_name => "{{ output.project_name }}"
+    username => "{{ output.username }}"
+    password => "{{ output.password }}"
+    user_domain_name => "{{ output.user_domain_name }}"
+    project_domain_name => "{{ output.project_domain_name }}"
+    dimensions => ["hostname:{{ output.dimensions }}"]
+  }
+}

@@ -34,7 +34,7 @@ install_system_service() {
     sudo systemctl start monasca-log-agent
 }
 
-generate_config_file() {
+generate_specific_config_file() {
     echo -e "#
     # Copyright 2017 FUJITSU LIMITED
     #
@@ -53,25 +53,17 @@ generate_config_file() {
     #
     input {" > ${INSTALL_DIR}/conf/agent.conf
 
-    if [ -z "$FILES" ]
-    then
-        echo -e "WARNING: No file paths were specified for input -- The agents.conf file
-    was successfully created, but you may wish to re-run this command
-    with any number of paths for input files at the end of your list
-    of arguments"
-    else
-        for file in $FILES
-        do
-            if [ ! -d $file ]; then
-                echo -e "   file {
-                #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
-                    path => \"$file\"
-                  }">> ${INSTALL_DIR}/conf/agent.conf
-            else
-                echo "$file is a directory. Only files can be monitored - skipping."
-            fi
-        done
-    fi
+    for file in $FILES
+    do
+        if [ ! -d $file ]; then
+            echo -e "   file {
+            #   add_field => { \"dimensions\" => { \"service\" => \"system\" }}
+                path => \"$file\"
+              }">> ${INSTALL_DIR}/conf/agent.conf
+        else
+            echo "$file is a directory. Only files can be monitored - skipping."
+        fi
+    done
 
     echo -e "}
 
@@ -89,6 +81,27 @@ generate_config_file() {
     }" >> ${INSTALL_DIR}/conf/agent.conf
 
     echo "agent.conf successfully created in $INSTALL_DIR/conf/"
+}
+
+generate_default_config_file() {
+    sudo python $BIN_DIR/set_config.py \
+        --tmp_config $INSTALL_DIR/conf/agent.conf.j2 \
+        --config $INSTALL_DIR/conf/agent.conf \
+        --input_ini $INSTALL_DIR/conf/input.ini \
+        --filter_ini $INSTALL_DIR/conf/filter.ini \
+        --monasca_log_api_url $MONASCA_LOG_API_URL \
+        --keystone_auth_url $KEYSTONE_AUTH_URL \
+        --project_name $PROJECT_NAME \
+        --username $USERNAME \
+        --password $PASSWORD \
+        --user_domain_name $USER_DOMAIN_NAME \
+        --project_domain_name $PROJECT_DOMAIN_NAME \
+        --hostname $HOSTNAME
+
+    echo -e "INFO: No file paths were specified for input -- The default
+agents.conf file was successfully created in $INSTALL_DIR/conf/, but you may
+wish to re-run this command with any number of paths for input files at the end
+of your list of arguments"
 }
 
 # set default values
@@ -163,8 +176,12 @@ echo PROJECT_DOMAIN_NAME  = "${PROJECT_DOMAIN_NAME}"
 echo DIMENSIONS    = "[ \"hostname:$HOSTNAME\"]"
 echo -e INPUT FILE\(S\) PATH\(S\) = "${FILES}"
 
-# Generate agent.conf file with specified values
-generate_config_file
+# Generate agent.conf file
+if [ -z "$FILES" ]; then
+    generate_default_config_file
+else
+    generate_specific_config_file
+fi
 
 # create the monasca-log-agent.service file in /etc/systemd/system/
 if [ ${NO_SERVICE} = false ]; then
