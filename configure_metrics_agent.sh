@@ -89,7 +89,7 @@ Restart=on-failure
 ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 
 [Install]
-WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
+WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
     sudo chown root:root "${systemd_file}"
