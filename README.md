@@ -188,7 +188,7 @@ To include all the files in a directory, use the `*` wild card (eg. `/var/log/*`
 | `user_domain_name`    | no       | `default`                      |                                | User domain id for username scoping |
 | `project_domain_name` | no       | `default`                      |                                | Project domain id for keystone authentication |
 | `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
-| `input_file_path_n`   | yes      | `unset`                        | `/var/log/*`                   | Input log file path |
+| `input_file_path_n`   | no       | `unset`                        | `/var/log/*`                   | Input log file path. **If this variable is not specified, default log agent configuration file is created.** |
 
 Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
