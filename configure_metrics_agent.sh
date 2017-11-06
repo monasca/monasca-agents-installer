@@ -43,7 +43,7 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 priority=999
 startsecs=2
-user=root
+user=mon-agent
 autorestart=true
 
 [program:forwarder]
@@ -52,7 +52,7 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
 priority=998
-user=root
+user=mon-agent
 autorestart=true
 
 [program:statsd]
@@ -61,14 +61,14 @@ stdout_logfile=NONE
 stderr_logfile=NONE
 startsecs=3
 priority=998
-user=root
+user=mon-agent
 autorestart=true
 
 [group:monasca-agent]
 programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
     sudo cp -f "${tmp_conf_file}" "${supervisor_file}"
-    sudo chown root:root "${supervisor_file}"
+    sudo chown mon-agent:mon-agent "${supervisor_file}"
     sudo chmod 0664 "${supervisor_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_conf_file}"
@@ -88,25 +88,42 @@ Description=Monasca Agent
 
 [Service]
 Type=simple
-User=root
-Group=root
+User=mon-agent
+Group=mon-agent
 Restart=on-failure
 ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 
 [Install]
-WantedBy=multi-user.targetvagrant" > "${tmp_service_file}"
+WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chown root:root "${systemd_file}"
+    sudo chown mon-agent:mon-agent "${systemd_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
-    sudo systemctl enable monasca-agent
-    sudo systemctl start monasca-agent
 
     echo "/etc/systemd/system/monasca-agent.service created"
+}
+
+set_attributes() {
+
+    # Set proper attributes of files
+    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca")
+
+    for directory in ${METRIC_DIRS[@]}
+    do
+        sudo find ${directory} -type d -exec chmod 750 {} +
+        sudo find ${directory} -type d -exec chown mon-agent:mon-agent {} +
+    done
+
+    echo "Set proper attributes successfully"
 }
 
 generate_supervisor_config
 
 install_system_service
+
+set_attributes
+
+sudo systemctl enable monasca-agent
+sudo systemctl start monasca-agent
