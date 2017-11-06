@@ -137,7 +137,7 @@ Please use the embedded help for detailed and up-to-date info:
 To provide Keystone credentials and configure the agent using auto-detection run the following command:
 
 ```
-./monasca-agent.run --target /opt/monasca/monasca-agent -- --username <username> --password <password>\
+./monasca-agent.run --target /opt/monasca-agent -- --username <username> --password <password>\
                     --project_name <project> --keystone_url <keystone_url> --monasca_statsd_port <statsd_port>
 ```
 
@@ -165,7 +165,7 @@ To create an agent configuration file (agent.conf), run
 Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
-    --target /opt/monasca/monasca-log-agent -- \
+    --target /opt/monasca-log-agent -- \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
