@@ -16,10 +16,12 @@ To use the latest version of monasca-agent, simply run
 ./create_metrics_agent_installer.sh 
 ```
 
-To use a specific version of monasca-agent, add the desired version number as an argument:
+To use a specific version of monasca-agent, add the desired version number and upper constraint file as an argument:
 ```
-./create_metrics_agent_installer.sh <version_number>
+./create_metrics_agent_installer.sh <version_number> <upper_constraint_file>
 ```
+
+You can find an example of an upper constraint file [here](https://github.com/openstack/requirements/blob/master/upper-constraints.txt).
 
 Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
 
@@ -137,8 +139,15 @@ Please use the embedded help for detailed and up-to-date info:
 To provide Keystone credentials and configure the agent using auto-detection run the following command:
 
 ```
-./monasca-agent.run --target /opt/monasca-agent -- --username <username> --password <password>\
-                    --project_name <project> --keystone_url <keystone_url> --monasca_statsd_port <statsd_port>
+./monasca-agent.run \
+    --target /opt/monasca-agent -- \
+    --username <username> \
+    --password <password> \
+    --project_name <project> \
+    --user_domain_name <user_domain_name> \
+    --project_domain_name <project_domain_name> \
+    --keystone_url <keystone_url> \
+    --monasca_statsd_port <statsd_port>
 ```
 
 | Parameter             | Required | Default | Example Value   | Description |
@@ -147,6 +156,8 @@ To provide Keystone credentials and configure the agent using auto-detection run
 | `password`            | yes      | `Unset` | `mypassword`    | This is a required parameter that specifies the password needed to login to Keystone to get a token |
 | `keystone_url`        | yes      | `Unset` | `http://192.168.1.5:35357/v3` | This is a required parameter that specifies the url of the keystone api for retrieving tokens. **It must be a v3 endpoint.** |
 | `project_name`        | no       | `null`  | `myproject`     | Specifies the name of the Keystone project name to store the metrics under, defaults to users default project. |
+| `user_domain_name`    | no       | `null`  | `default`       | User domain name for username scoping |
+| `project_domain_name` | no       | `null`  | `default`       | Project domain name for keystone authentication |
 | `monasca_statsd_port` | no       | `8125`  | `8126`          | Integer value for statsd daemon port number. **If default port number is used, set the other number (e.g. 8126) which is not used.** |
 
 For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
