@@ -16,12 +16,12 @@ To use the latest version of monasca-agent, simply run
 ./create_metrics_agent_installer.sh 
 ```
 
-To use a specific version of monasca-agent, add the desired version number and upper constraint file as an argument:
+To use a specific version of monasca-agent, add the desired version number and upper constraints file as an argument:
 ```
-./create_metrics_agent_installer.sh <version_number> <upper_constraint_file>
+./create_metrics_agent_installer.sh <version_number> <upper_constraints_file>
 ```
 
-You can find an example of an upper constraint file [here](https://github.com/openstack/requirements/blob/master/upper-constraints.txt).
+You can find an example of an upper constraints file [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
 
 Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
 
@@ -41,9 +41,10 @@ This will generate a new executable named: `log-agent-<logstash_version>_<logsta
 In order to create the monasca-ui installer, you need to run the
 following command:
 ```
-./create_monasca_ui_installer.sh <version_number>
+./create_monasca_ui_installer.sh <version_number> <upper_constraints_file>
 ```
 
+You can find an example of an upper constraints file [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
 In case the `<version_number>` is omitted, the newest one will be used.
 
 ## Keystone configuration
