@@ -122,10 +122,8 @@ setup:
 ```
 openstack service create --name monasca monitoring
 openstack service create --name logs logs
-openstack service create --name logs_v2 logs_v2
 openstack endpoint create monasca public http://192.168.10.6:8070/v2.0 --region <Region_name>
 openstack endpoint create logs public http://192.168.10.6:5607/v3.0 --region <Region_name>
-openstack endpoint create logs_v2 public http://192.168.10.6:5607/v2.0 --region <Region_name>
 ```
 
 ## Running the installer
@@ -235,7 +233,9 @@ configuration file, for example:
 WSGIScriptAlias / /srv/www/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
 ```
 
-Then it is required to enable the monasca-ui plugin. Simply create 
+You may also have to append the Python system path in the `manage.py` script.
+
+Then it is required to enable the monasca-ui plugin. Simply create
 symbolic links in horizon installation pointing to the monasca-ui
 installation:
 
