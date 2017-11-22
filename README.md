@@ -18,11 +18,12 @@ To use the latest version of monasca-agent, simply run
 
 To use a specific version of monasca-agent, add the desired version number and upper constraints file as an argument:
 ```
-./create_metrics_agent_installer.sh <version_number> <upper_constraints_file>
+./create_metrics_agent_installer.sh -v <version_number> -u <upper_constraints_file>
 ```
 
 You can find an example of an upper constraints file [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
 
+Additionally, you can add the `--install_libvirt_dependencies` to install python packages for libvirt.
 Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
 
 ### Log agent
