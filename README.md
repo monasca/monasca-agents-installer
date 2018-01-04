@@ -5,7 +5,7 @@ for Monasca agents as well as for the monasca-ui Horizon plugin, allowing the
 user to easily install and configure agents on the target host.
 
 The agents currently supported are the [metrics agent](https://github.com/openstack/monasca-agent) 
-and the log agent. (There are plans to support an events agent in the future, ).
+and the log agent. (There are plans to support an events agent in the future).
 
 This project uses [makeself](https://github.com/megastep/makeself/) for building 
 the self-extracting archive.
