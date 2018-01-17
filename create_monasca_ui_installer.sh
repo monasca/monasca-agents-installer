@@ -21,6 +21,8 @@ fi
 virtualenv --relocatable ${MONASCA_UI_TMP_DIR}
 
 cp configure_monasca_ui.sh ${MONASCA_UI_TMP_DIR}/bin
+LOCAL_SETTINGS_FILE=$(find "${MONASCA_UI_TMP_DIR}" -name local_settings.py)
+sed -i -e "s/192.168.10.4:5601/<kibana_host>:5601/g" "${LOCAL_SETTINGS_FILE}"
 
 if [ -d "${MAKESELF_DIR}" ]; then
     cd ${MAKESELF_DIR}

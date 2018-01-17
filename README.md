@@ -13,7 +13,7 @@ This project uses [makeself](https://github.com/megastep/makeself/) for building
 ### Metrics agent
 To use the latest version of monasca-agent, simply run
 ```
-./create_metrics_agent_installer.sh 
+./create_metrics_agent_installer.sh
 ```
 
 To use a specific version of monasca-agent, add the desired version number and upper constraints file as an argument:
@@ -67,7 +67,7 @@ export OS_AUTH_URL=<keystone auth url>
 export OS_REGION_NAME=<region name>
 ```
 
-One can verify if the provided credentials are correct by running 
+One can verify if the provided credentials are correct by running
 a simple command, like
 
 ```
@@ -162,7 +162,7 @@ To provide Keystone credentials and configure the agent using auto-detection run
 
 For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
 
-This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above. 
+This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above.
 
 ### Log agent
 Please use the embedded help for detailed and up-to-date info:
@@ -214,11 +214,11 @@ This will extract the plugin with all the required dependencies.
 
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
-the Horizon system path. You need to find your wsgi script for Horizon 
+the Horizon system path. You need to find your wsgi script for Horizon
 and edit it adding:
 
 ```
-sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/") 
+sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/")
 ```
 
 If your deployment uses Apache server for hosting the wsgi applications,
@@ -247,8 +247,13 @@ ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/conf/monitoring_po
       <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 
-You may also need to adjust some settings in 
+You need to adjust some settings in
 `<monasca_ui_dir>/lib/python2.7/site-packages/monitoring/config/local_settings.py`
+
+In this file you need to configure Kibana IP in the following line:
+
+`KIBANA_HOST = getattr(settings, 'KIBANA_HOST', 'http://<kibana_host>:5601/')`
+
 For reference please consult monasca-ui documentation.
 
 After that, you need to restart the apache server:
