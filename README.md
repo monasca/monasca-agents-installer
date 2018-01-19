@@ -310,8 +310,13 @@ ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/conf/monitoring_po
       <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 
-You may also need to adjust some settings in
+You need to adjust settings in
 `<monasca_ui_dir>/lib/python2.7/site-packages/monitoring/config/local_settings.py`
+
+In this file you need to configure Kibana IP in the following line:
+
+`KIBANA_HOST = getattr(settings, 'KIBANA_HOST', 'http://<kibana_host>:5601/')`
+
 For reference please consult monasca-ui documentation.
 
 After that, you need to restart the apache server:
