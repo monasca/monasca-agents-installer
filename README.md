@@ -164,10 +164,13 @@ systemctl stop monasca-agent
 systemctl disable monasca-agent
 ```
 
+In the following description, `[target_dir]` is the target directory specified
+at the time of running `monasca-agent-[version].run`.
+
 Delete created files:
 ```
+sudo rm -rf [target_dir]
 sudo rm -rf /etc/monasca/agent/
-sudo rm -rf /opt/monasca-agent/
 sudo rm -rf /etc/sudoers.d/mon-agent/
 ```
 Delete the service related to the agent.
@@ -249,7 +252,7 @@ at the time of running `log-agent-[version].run`.
 
 Delete obsolete files:
 ```
-rm -f [target_dir]/
+rm -rf [target_dir]/
 rm -f /etc/systemd/system/monasca-log-agent.service
 systemctl daemon-reload
 ```
