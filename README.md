@@ -255,6 +255,7 @@ Delete obsolete files:
 rm -rf [target_dir]/
 rm -f /etc/systemd/system/monasca-log-agent.service
 systemctl daemon-reload
+systemctl reset-failed monasca-log-agent
 ```
 
 ## Monasca-ui plugin
