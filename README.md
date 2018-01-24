@@ -171,7 +171,7 @@ Delete created files:
 ```
 sudo rm -rf [target_dir]
 sudo rm -rf /etc/monasca/agent/
-sudo rm -rf /etc/sudoers.d/mon-agent/
+sudo rm -f /etc/sudoers.d/mon-agent
 ```
 Delete the service related to the agent.
 ```
