@@ -1,52 +1,25 @@
 # Monasca Agents Installer
 
-This project allows to create a self-extracting installer for Monasca agents
-([metrics agent](https://github.com/openstack/monasca-agent), log agent and, in future, events agent).
-The aim of the installer is to easily install and configure agents on the target host.
+This project includes everything needed to create self-extracting installers
+for Monasca agents as well as for the monasca-ui Horizon plugin, allowing the
+user to easily install and configure agents on the target host.
 
-Additionally, the monasca-ui Horizon plugin is also supported.
+The agents currently supported are the [metrics agent](https://github.com/openstack/monasca-agent)
+and the log agent. (There are plans to support an events agent in the future).
 
-This project uses [makeself](https://github.com/megastep/makeself/) for building the self-extracting archive.
+This project uses [makeself](https://github.com/megastep/makeself/) for building
+the self-extracting archive.
 
-## Creating the installer package
+Jump to:
 
-### Metrics agent
-To use the latest version of monasca-agent, simply run
-```
-./create_metrics_agent_installer.sh
-```
+[Keystone configuration](#keystone-configuration)
 
-To use a specific version of monasca-agent, add the desired version number and upper constraints file as an argument:
-```
-./create_metrics_agent_installer.sh -v <version_number> -u <upper_constraints_file>
-```
+[Metrics agent](#metrics-agent)
 
-You can find an example of an upper constraints file [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
+[Logs agent](#logs-agent)
 
-Additionally, you can add the `--install_libvirt_dependencies` to install python packages for libvirt.
-Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
+[Monasca UI plugin](#monasca-ui-plugin)
 
-### Log agent
-To use default versions of `logstash` and `logstash_output_monasca_log_api`, simply run
-```
-./create_log_agent_installer.sh
-```
-You can add an argument to specify the `logstash` version, or two arguments to also specify the `logstash_output_monasca_log_api` version:
-```
-./create_log_agent_installer.sh <logstash_version> <logstash_output_monasca_log_api_version>
-```
-This will generate a new executable named: `log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run` .
-
-### Monasca-ui plugin
-
-In order to create the monasca-ui installer, you need to run the
-following command:
-```
-./create_monasca_ui_installer.sh <version_number> <upper_constraints_file>
-```
-
-You can find an example of an upper constraints file [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
-In case the `<version_number>` is omitted, the newest one will be used.
 
 ## Keystone configuration
 
@@ -127,26 +100,45 @@ openstack endpoint create monasca public http://192.168.10.6:8070/v2.0 --region 
 openstack endpoint create logs public http://192.168.10.6:5607/v3.0 --region <Region_name>
 ```
 
-## Running the installer
+## Metrics agent
 
-### Metrics agent
+### Creating the installer package
+To use the latest version of monasca-agent, simply run
+```
+./create_metrics_agent_installer.sh
+```
+
+To use a specific version of monasca-agent, add the desired version number
+and upper constraints file as an argument:
+```
+./create_metrics_agent_installer.sh -v <version_number> -u <upper_constraints_file>
+```
+
+You can find an example of an upper constraints file
+[here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
+
+Additionally, you can add the `--install_libvirt_dependencies` to install python packages for libvirt.
+Either way, this will generate a new executable named: `monasca-agent-<version_number>.run` .
+
+### Running the installer
 Please use the embedded help for detailed and up-to-date info:
 
 ```
 ./monasca-agent-<version_number>.run --help
 ```
 
-To provide Keystone credentials and configure the agent using auto-detection run the following command:
+To provide Keystone credentials and configure the agent using auto-detection
+run the following command:
 
 ```
 ./monasca-agent.run \
     --target /opt/monasca-agent -- \
     --username <username> \
     --password <password> \
+    --keystone_url <keystone_url> \
     --project_name <project> \
     --user_domain_name <user_domain_name> \
     --project_domain_name <project_domain_name> \
-    --keystone_url <keystone_url> \
     --monasca_statsd_port <statsd_port>
 ```
 
@@ -162,9 +154,52 @@ To provide Keystone credentials and configure the agent using auto-detection run
 
 For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
 
-This will create and run a new service file `/etc/systemd/system/monasca-agent.service` with the configuration set as per the arguments mentioned above.
+This will create and run a new service file `/etc/systemd/system/monasca-agent.service`
+with the configuration set as per the arguments mentioned above.
 
-### Log agent
+### Uninstalling Metrics agent
+Stop the services:
+```
+systemctl stop monasca-agent
+systemctl disable monasca-agent
+```
+
+In the following description, `[target_dir]` is the target directory specified
+at the time of running `monasca-agent-[version].run`.
+
+Delete created files:
+```
+sudo rm -rf [target_dir]
+sudo rm -rf /etc/monasca/agent/
+sudo rm -f /etc/sudoers.d/mon-agent
+```
+Delete the service related to the agent.
+```
+sudo rm -f /etc/systemd/system/monasca-agent.service
+systemctl daemon-reload
+```
+Finally, remove `mon-agent` user (`-r` will also remove user's home directory):
+```
+sudo userdel -r mon-agent
+```
+
+## Logs agent
+
+### Creating the installer package
+To use default versions of `logstash` and `logstash_output_monasca_log_api`,
+simply run
+```
+./create_log_agent_installer.sh
+```
+You can add an argument to specify the `logstash` version, or two arguments
+to also specify the `logstash_output_monasca_log_api` version:
+```
+./create_log_agent_installer.sh <logstash_version> <logstash_output_monasca_log_api_version>
+```
+This will generate a new executable named:
+`log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run` .
+
+### Running the installer
 Please use the embedded help for detailed and up-to-date info:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monsaca_log_api_version>.run --help
@@ -173,7 +208,8 @@ To create an agent configuration file (agent.conf), run
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run
 ```
-Use the following arguments to modify the default values of the`agent.conf` file, followed by any number of input file paths:
+Use the following arguments to modify the default values of the`agent.conf`
+file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
     --target /opt/monasca-log-agent -- \
@@ -201,10 +237,41 @@ To include all the files in a directory, use the `*` wild card (eg. `/var/log/*`
 | `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
 | `input_file_path_n`   | no       | `unset`                        | `/var/log/*`                   | Input log file path. **If this variable is not specified, default log agent configuration file is created.** |
 
-Additionally, you can add the `--no_service` to omit the step of automatically creating `monasca-log-agent.service` in `/etc/systemd/system/`
+Additionally, you can add the `--no_service` to omit the step of automatically
+creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
-### Monasca-ui
+### Uninstalling Logs agent
+Stop the service:
+```
+systemctl stop monasca-log-agent
+systemctl disable monasca-log-agent
+```
 
+In the following description, `[target_dir]` is the target directory specified
+at the time of running `log-agent-[version].run`.
+
+Delete obsolete files:
+```
+rm -rf [target_dir]/
+rm -f /etc/systemd/system/monasca-log-agent.service
+systemctl daemon-reload
+systemctl reset-failed monasca-log-agent
+```
+
+## Monasca-ui plugin
+
+### Creating the installer package
+In order to create the monasca-ui installer, you need to run the
+following command:
+```
+./create_monasca_ui_installer.sh <version_number> <upper_constraints_file>
+```
+
+You can find an example of an upper constraints file
+[here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
+In case the `<version_number>` is omitted, the newest one will be used.
+
+### Running the installer
 The monasca-ui plugin can be installed via the following command:
 ```
 ./monasca-ui-<version>.run --target <monasca_ui_dir>
@@ -247,7 +314,7 @@ ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/conf/monitoring_po
       <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 
-You need to adjust some settings in
+You need to adjust settings in
 `<monasca_ui_dir>/lib/python2.7/site-packages/monitoring/config/local_settings.py`
 
 In this file you need to configure Kibana IP in the following line:
@@ -257,6 +324,28 @@ In this file you need to configure Kibana IP in the following line:
 For reference please consult monasca-ui documentation.
 
 After that, you need to restart the apache server:
+```
+systemctl restart apache2
+```
+
+### Uninstalling Monasca UI plugin
+Remove the symlinks:
+```
+rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+rm <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
+```
+Remove the line with the instruction to append site-packages in the wsgi file:
+
+Open file: `<horizon_dir>/openstack_dashboard/wsgi/django.wsgi`, delete
+the line: `sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/")`
+and save.
+
+Delete created files:
+```
+rm -rf <installation_dir>/monasca_ui
+```
+
+Restart the apache server
 ```
 systemctl restart apache2
 ```
