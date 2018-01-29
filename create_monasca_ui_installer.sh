@@ -7,7 +7,7 @@ source commons
 # of monasca-ui if no argument is specified.
 MONASCA_UI_VERSION=${1:-$(pip search monasca-ui | grep monasca-ui | \
                             awk '{print $2}' | sed 's|(||' | sed 's|)||')}
-UPPER_CONSTRAINT_FILE=${2:-""}
+UPPER_CONSTRAINTS_FILE=${2:-""}
 
 MONASCA_UI_TMP_DIR="${TMP_DIR}/monasca-ui"
 
@@ -17,12 +17,12 @@ echo ">>> Creating virtual environment in temporary location"
 virtualenv "${MONASCA_UI_TMP_DIR}"
 
 echo ">>> Downloading monasca-ui in version: ${MONASCA_UI_VERSION}"
-if [ -z "${UPPER_CONSTRAINT_FILE}" ]; then
-    echo ">>> No upper constraint file specified"
+if [ -z "${UPPER_CONSTRAINTS_FILE}" ]; then
+    echo ">>> No upper constraints file specified"
     "${MONASCA_UI_TMP_DIR}"/bin/pip install monasca-ui=="$MONASCA_UI_VERSION"
 else
-    echo ">>> Using upper constraint file: ${UPPER_CONSTRAINT_FILE}"
-    "${MONASCA_UI_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINT_FILE}" \
+    echo ">>> Using upper constraints file: ${UPPER_CONSTRAINTS_FILE}"
+    "${MONASCA_UI_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" \
       monasca-ui=="$MONASCA_UI_VERSION"
 fi
 
