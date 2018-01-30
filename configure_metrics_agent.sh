@@ -1,12 +1,17 @@
 #!/bin/bash -e
 
-echo "Configuring agent..."
+log() { echo -e "$(date --iso-8601=seconds)" "$1"; }
+error() { log "ERROR: $1"; }
+warn() { log "WARNING: $1"; }
+inf() { log "INFO: $1"; }
+
+inf "Configuring agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=`cd $BIN_DIR/.. && pwd`
-MON_SUDUERS_FILE="/etc/sudoers.d/mon-agent"
+MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 
-if [ ! -e ${MON_SUDUERS_FILE} ]; then
-    echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee ${MON_SUDUERS_FILE} >> /dev/null
+if [ ! -e "${MON_SUDOERS_FILE}" ]; then
+    echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
 fi
 
 sudo mkdir -p /etc/monasca
@@ -73,7 +78,7 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_conf_file}"
 
-    echo "/etc/monasca/agent/supervisor.conf created"
+    inf "${supervisor_file} created"
 }
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
@@ -102,7 +107,7 @@ WantedBy=multi-user.target" > "${tmp_service_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
 
-    echo "/etc/systemd/system/monasca-agent.service created"
+    inf "${systemd_file} created"
 }
 
 set_attributes() {
@@ -116,7 +121,7 @@ set_attributes() {
         sudo find ${directory} -type d -exec chown mon-agent:mon-agent {} +
     done
 
-    echo "Set proper attributes successfully"
+    inf "Set proper attributes successfully"
 }
 
 generate_supervisor_config
@@ -125,5 +130,7 @@ install_system_service
 
 set_attributes
 
+inf "Start Monasca Agent daemon"
+sudo systemctl stop monasca-agent || true
 sudo systemctl enable monasca-agent
 sudo systemctl start monasca-agent
