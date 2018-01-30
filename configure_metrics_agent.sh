@@ -82,7 +82,7 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 }
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
-install_system_service() {
+create_system_service_file() {
     local tmp_service_file="/tmp/monasca-agent.service"
     local systemd_dir="/etc/systemd/system"
     local systemd_file="$systemd_dir/monasca-agent.service"
@@ -126,7 +126,7 @@ set_attributes() {
 
 generate_supervisor_config
 
-install_system_service
+create_system_service_file
 
 set_attributes
 

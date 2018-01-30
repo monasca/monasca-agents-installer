@@ -11,7 +11,7 @@ INSTALL_DIR=$(cd "$BIN_DIR/.." && pwd)
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
 
 # Creates monasca-log-agent.service file in etc/systemd/system/ with 0664 permissions
-install_system_service() {
+create_system_service_file() {
     local tmp_service_file="/tmp/monasca-log-agent.service"
     local systemd_dir="/etc/systemd/system"
     local systemd_file="$systemd_dir/monasca-log-agent.service"
@@ -47,9 +47,7 @@ install_system_service() {
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
 
-    inf "Start Monasca Log Agent daemon"
-    sudo systemctl enable monasca-log-agent
-    sudo systemctl start monasca-log-agent
+    inf "${systemd_file} created"
 }
 
 generate_specific_config_file() {
@@ -229,5 +227,10 @@ fi
 
 # Create the monasca-log-agent.service file in /etc/systemd/system/
 if [ ${NO_SERVICE} = false ]; then
-    install_system_service
+    create_system_service_file
+
+    inf "Start Monasca Log Agent daemon"
+    sudo systemctl stop monasca-log-agent || true
+    sudo systemctl enable monasca-log-agent
+    sudo systemctl start monasca-log-agent
 fi
