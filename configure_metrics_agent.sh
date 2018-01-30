@@ -7,7 +7,7 @@ inf() { log "INFO: $1"; }
 
 inf "Configuring agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-INSTALL_DIR=`cd $BIN_DIR/.. && pwd`
+INSTALL_DIR=$( cd "$BIN_DIR/.." && pwd )
 MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
@@ -16,7 +16,7 @@ fi
 
 sudo mkdir -p /etc/monasca
 
-sudo ${BIN_DIR}/python ${BIN_DIR}/monasca-setup $@
+sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "$@"
 
 generate_supervisor_config() {
     local tmp_conf_file="/tmp/supervisor.conf"
@@ -115,10 +115,10 @@ set_attributes() {
     # Set proper attributes of files
     METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca")
 
-    for directory in ${METRIC_DIRS[@]}
+    for directory in "${METRIC_DIRS[@]}"
     do
-        sudo find ${directory} -type d -exec chmod 750 {} +
-        sudo find ${directory} -type d -exec chown mon-agent:mon-agent {} +
+        sudo find "${directory}" -type d -exec chmod 750 {} +
+        sudo find "${directory}" -type d -exec chown mon-agent:mon-agent {} +
     done
 
     inf "Set proper attributes successfully"
