@@ -3,6 +3,11 @@
 # shellcheck disable=SC1091
 source commons
 
+log() { echo -e "$(date --iso-8601=seconds)" "$1"; }
+error() { log "ERROR: $1"; }
+warn() { log "WARNING: $1"; }
+inf() { log "INFO: $1"; }
+
 # takes the first argument as the version. Defaults to the latest version
 # of monasca-agent if no argument is specified.
 MONASCA_AGENT_VERSION=$(pip search monasca-agent | grep monasca-agent | \
@@ -40,30 +45,30 @@ LIBVIRT_DEPENDENCIES=("libvirt-python" "lxml" "python-neutronclient" "python-nov
 
 mkdir -p "${MONASCA_AGENT_TMP_DIR}"
 
-echo ">>> Creating virtual environment in temporary location"
+inf "Creating virtual environment in temporary location"
 virtualenv "${MONASCA_AGENT_TMP_DIR}"
 
-echo ">>> Downloading Monasca Agent in version: ${MONASCA_AGENT_VERSION}"
+inf "Downloading Monasca Agent in version: ${MONASCA_AGENT_VERSION}"
 if [ -z "${UPPER_CONSTRAINTS_FILE}" ]; then
-    echo ">>> No upper constraints file specified"
+    inf "No upper constraints file specified"
     "${MONASCA_AGENT_TMP_DIR}"/bin/pip install monasca-agent=="$MONASCA_AGENT_VERSION"
     for pip_dependencies in "${PIP_DEPENDENCIES[@]}"; do
         "${MONASCA_AGENT_TMP_DIR}"/bin/pip install "$pip_dependencies"
     done
     if [ ${INSTALL_LIBVIRT_DEPENDENCIES} = true ]; then
-        echo ">>> Downloading libvirt dependencies"
+        inf "Downloading libvirt dependencies"
         for libvirt_dependencies in "${LIBVIRT_DEPENDENCIES[@]}"; do
             "${MONASCA_AGENT_TMP_DIR}"/bin/pip install "$libvirt_dependencies"
         done
     fi
 else
-    echo ">>> Using upper constraints file: ${UPPER_CONSTRAINTS_FILE}"
+    inf "Using upper constraints file: ${UPPER_CONSTRAINTS_FILE}"
     "${MONASCA_AGENT_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" monasca-agent=="$MONASCA_AGENT_VERSION"
     for dependencies in "${PIP_DEPENDENCIES[@]}"; do
         "${MONASCA_AGENT_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" "$dependencies"
     done
     if [ ${INSTALL_LIBVIRT_DEPENDENCIES} = true ]; then
-        echo ">>> Downloading libvirt dependencies"
+        inf "Downloading libvirt dependencies"
         for libvirt_dependencies in "${LIBVIRT_DEPENDENCIES[@]}"; do
             "${MONASCA_AGENT_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" "$libvirt_dependencies"
         done
@@ -73,7 +78,7 @@ virtualenv --relocatable "${MONASCA_AGENT_TMP_DIR}"
 
 cp configure_metrics_agent.sh "${MONASCA_AGENT_TMP_DIR}"/bin
 
-echo ">>> Downloading latest Makeself"
+inf "Downloading latest Makeself"
 if [ -d "${MAKESELF_DIR}" ]; then
     cd "${MAKESELF_DIR}" || exit
     git pull
@@ -86,7 +91,7 @@ cat metrics_agent_help_header > metrics_agent_help_header.tmp
 "${MONASCA_AGENT_TMP_DIR}"/bin/python "${MONASCA_AGENT_TMP_DIR}"/bin/monasca-setup --help \
     >> metrics_agent_help_header.tmp
 
-echo ">>> Creating Monasca Agent installer file"
+inf "Creating Monasca Agent installer file"
 "${MAKESELF_DIR}"/makeself.sh --notemp \
                               --tar-quietly \
                               --help-header metrics_agent_help_header.tmp \
@@ -95,7 +100,7 @@ echo ">>> Creating Monasca Agent installer file"
                               "Monasca Agent installer" \
                               ./bin/configure_metrics_agent.sh
 
-echo ">>> Removing temporary files"
+inf "Removing temporary files"
 rm -rf "${MONASCA_AGENT_TMP_DIR}"
 
-echo ">>> Process of creating Monasca Agent installer ended successfully"
+inf "Process of creating Monasca Agent installer ended successfully"

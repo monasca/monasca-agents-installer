@@ -1,6 +1,11 @@
 #!/bin/bash -e
 
-echo "Configuring log agent..."
+log() { echo -e "$(date --iso-8601=seconds)" "$1"; }
+error() { log "ERROR: $1"; }
+warn() { log "WARNING: $1"; }
+inf() { log "INFO: $1"; }
+
+inf "Configuring log agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=`cd $BIN_DIR/.. && pwd`
 LOGSTASH_DIR="$INSTALL_DIR/`ls $BIN_DIR/.. | grep logstash`"
@@ -10,7 +15,6 @@ install_system_service() {
     local tmp_service_file="/tmp/monasca-log-agent.service"
     local systemd_dir="/etc/systemd/system"
     local systemd_file="$systemd_dir/monasca-log-agent.service"
-
 
     echo "[Unit]
     Description = monasca-log-agent.service
@@ -61,7 +65,7 @@ generate_specific_config_file() {
                 path => \"$file\"
               }">> ${INSTALL_DIR}/conf/agent.conf
         else
-            echo "$file is a directory. Only files can be monitored - skipping."
+            inf "$file is a directory. Only files can be monitored - skipping."
         fi
     done
 
@@ -80,7 +84,7 @@ generate_specific_config_file() {
       }
     }" >> ${INSTALL_DIR}/conf/agent.conf
 
-    echo "agent.conf successfully created in $INSTALL_DIR/conf/"
+    inf "agent.conf successfully created in $INSTALL_DIR/conf/"
 }
 
 generate_default_config_file() {
@@ -98,7 +102,7 @@ generate_default_config_file() {
         --project_domain_name $PROJECT_DOMAIN_NAME \
         --hostname $HOSTNAME
 
-    echo -e "INFO: No file paths were specified for input -- The default
+    inf "INFO: No file paths were specified for input -- The default
 agents.conf file was successfully created in $INSTALL_DIR/conf/, but you may
 wish to re-run this command with any number of paths for input files at the end
 of your list of arguments"
@@ -183,7 +187,7 @@ else
     generate_specific_config_file
 fi
 
-# create the monasca-log-agent.service file in /etc/systemd/system/
+# Create the monasca-log-agent.service file in /etc/systemd/system/
 if [ ${NO_SERVICE} = false ]; then
     install_system_service
 fi
