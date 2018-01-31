@@ -74,6 +74,11 @@ else
         done
     fi
 fi
+
+LIBVIRT_EXAMPLE_FILE=$(find "${MONASCA_AGENT_TMP_DIR}" -name libvirt.yaml.example)
+sed -i -e "s/project_name: service/project_name: services/g" "${LIBVIRT_EXAMPLE_FILE}"
+sed -i -e "s|192.168.10.5/identity|<keystone_ip>:35357|g" "${LIBVIRT_EXAMPLE_FILE}"
+
 virtualenv --relocatable "${MONASCA_AGENT_TMP_DIR}"
 
 cp configure_metrics_agent.sh "${MONASCA_AGENT_TMP_DIR}"/bin
