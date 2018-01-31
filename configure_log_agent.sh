@@ -11,10 +11,22 @@ INSTALL_DIR=$(cd "$BIN_DIR/.." && pwd)
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
 
 # Creates monasca-log-agent.service file in etc/systemd/system/ with 0664 permissions
-install_system_service() {
+create_system_service_file() {
     local tmp_service_file="/tmp/monasca-log-agent.service"
     local systemd_dir="/etc/systemd/system"
     local systemd_file="$systemd_dir/monasca-log-agent.service"
+
+    if [ -f "${systemd_file}" ]; then
+        if [ "$OVERWRITE_FILES" = "false" ]; then
+            warn "Service file already exists"
+            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            return
+        else
+            inf "Existing service file will be overwritten"
+        fi
+    fi
+
+    inf "Creating new service file"
 
     echo "[Unit]
     Description = monasca-log-agent.service
@@ -34,11 +46,21 @@ install_system_service() {
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
-    sudo systemctl enable monasca-log-agent
-    sudo systemctl start monasca-log-agent
+
+    inf "${systemd_file} created"
 }
 
 generate_specific_config_file() {
+    if [ -f "${INSTALL_DIR}/conf/agent.conf" ]; then
+        if [ "$OVERWRITE_FILES" = "false" ]; then
+            warn "${INSTALL_DIR}/conf/agent.conf already exists"
+            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            return
+        else
+            inf "Existing agent.conf file will be overwritten"
+        fi
+    fi
+
     echo -e "#
     # Copyright 2017 FUJITSU LIMITED
     #
@@ -88,6 +110,16 @@ generate_specific_config_file() {
 }
 
 generate_default_config_file() {
+    if [ -f "${INSTALL_DIR}/conf/agent.conf" ]; then
+        if [ "$OVERWRITE_FILES" = "false" ]; then
+            warn "${INSTALL_DIR}/conf/agent.conf already exists"
+            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            return
+        else
+            inf "Existing agent.conf file will be overwritten"
+        fi
+    fi
+
     sudo python "$BIN_DIR/set_config.py" \
         --tmp_config "$INSTALL_DIR/conf/agent.conf.j2" \
         --config "$INSTALL_DIR/conf/agent.conf" \
@@ -118,6 +150,7 @@ PASSWORD="password"
 USER_DOMAIN_NAME="default"
 PROJECT_DOMAIN_NAME="default"
 NO_SERVICE=false
+OVERWRITE_FILES=false
 FILES=""
 
 # check for additional arguments in call to override default values (above)
@@ -162,6 +195,10 @@ do
         HOSTNAME="$2"
         shift 2
         ;;
+        -o|--overwrite_files)
+        OVERWRITE_FILES=true
+        shift
+        ;;
         *)    # unknown option
         FILES+="$1 " # save it in an array for later
         shift
@@ -178,6 +215,7 @@ echo PASSWORD             = "${PASSWORD}"
 echo USER_DOMAIN_NAME     = "${USER_DOMAIN_NAME}"
 echo PROJECT_DOMAIN_NAME  = "${PROJECT_DOMAIN_NAME}"
 echo DIMENSIONS           = "[ \"hostname:$HOSTNAME\"]"
+echo OVERWRITE_FILES      = "${OVERWRITE_FILES}"
 echo -e INPUT FILE\(S\) PATH\(S\) = "${FILES}"
 
 # Generate agent.conf file
@@ -189,5 +227,10 @@ fi
 
 # Create the monasca-log-agent.service file in /etc/systemd/system/
 if [ ${NO_SERVICE} = false ]; then
-    install_system_service
+    create_system_service_file
+
+    inf "Start Monasca Log Agent daemon"
+    sudo systemctl stop monasca-log-agent || true
+    sudo systemctl enable monasca-log-agent
+    sudo systemctl start monasca-log-agent
 fi

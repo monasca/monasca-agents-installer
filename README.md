@@ -213,6 +213,7 @@ file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
     --target /opt/monasca-log-agent -- \
+    --overwrite_files \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
@@ -236,6 +237,9 @@ To include all the files in a directory, use the `*` wild card (eg. `/var/log/*`
 | `project_domain_name` | no       | `default`                      |                                | Project domain id for keystone authentication |
 | `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
 | `input_file_path_n`   | no       | `unset`                        | `/var/log/*`                   | Input log file path. **If this variable is not specified, default log agent configuration file is created.** |
+
+By default no file is overwritten so if you want to replace existing
+configuration and service file you need to add `--overwrite_files` option.
 
 Additionally, you can add the `--no_service` to omit the step of automatically
 creating `monasca-log-agent.service` in `/etc/systemd/system/`
