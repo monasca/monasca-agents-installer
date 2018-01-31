@@ -10,18 +10,65 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=$( cd "$BIN_DIR/.." && pwd )
 MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 
+MON_AGENT_DIR="/etc/monasca/agent"
+MON_SYSTEMD_DIR="/etc/systemd/system"
+
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
     echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
 fi
 
 sudo mkdir -p /etc/monasca
 
-sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "$@"
+# Check if file exist, if yes and OVERWRITE_CONF set to false, create backup
+# in same folder
+function protect_overwrite() {
+    local protected_file="$1"
+    if [ -f "${protected_file}" ]; then
+        if [ "${OVERWRITE_CONF}" = "false" ]; then
+            warn "${protected_file} already exists"
+            warn "If you want to overwrite it you need to use '--overwrite'"
+            \cp -f "${protected_file}" "${protected_file}.backup"
+            return
+        else
+            inf "Existing ${protected_file} file will be overwritten"
+        fi
+    fi
+}
+
+# Restore file to original location from backup copy if OVERWRITE_CONF is false
+function protect_restore() {
+    local protected_file="$1"
+    if [ "${OVERWRITE_CONF}" = "false" ]; then
+        warn "Restoring original ${protected_file}"
+        warn "If you want to overwrite it you need to use '--overwrite'"
+        \mv -f "${protected_file}.backup" "${protected_file}"
+        return
+    fi
+}
+
+function run_monasca_setup() {
+    local all_args="$1"
+
+    # All this files will be uncoditionaly overwritten by monasca-setup
+    # so we are creating they backups if OVERWRITE_CONF is set to false
+    protect_overwrite "${MON_AGENT_DIR}/agent.yaml"
+    protect_overwrite "${MON_AGENT_DIR}/supervisor.conf"
+    protect_overwrite "${MON_SYSTEMD_DIR}/monasca-agent.service"
+
+    inf "Running monasca-setup..."
+    sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args}"
+
+    protect_restore "${MON_AGENT_DIR}/agent.yaml"
+}
 
 generate_supervisor_config() {
+    if [ "${OVERWRITE_CONF}" = "false" ]; then
+        protect_restore "${MON_AGENT_DIR}/supervisor.conf"
+        return
+    fi
+
     local tmp_conf_file="/tmp/supervisor.conf"
-    local agent_dir="/etc/monasca/agent"
-    local supervisor_file="$agent_dir/supervisor.conf"
+    local supervisor_file="${MON_AGENT_DIR}/supervisor.conf"
 
     echo "[supervisorctl]
 serverurl = unix:///var/tmp/monasca-agent-supervisor.sock
@@ -83,9 +130,13 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
 create_system_service_file() {
+    if [ "${OVERWRITE_CONF}" = "false" ]; then
+        protect_restore "${MON_SYSTEMD_DIR}/monasca-agent.service"
+        return
+    fi
+
     local tmp_service_file="/tmp/monasca-agent.service"
-    local systemd_dir="/etc/systemd/system"
-    local systemd_file="$systemd_dir/monasca-agent.service"
+    local systemd_file="${MON_SYSTEMD_DIR}/monasca-agent.service"
 
 
     echo -e "[Unit]
@@ -123,6 +174,29 @@ set_attributes() {
 
     inf "Set proper attributes successfully"
 }
+
+OVERWRITE_CONF=false
+
+MONASCA_SETUP_VARS=""
+
+# check for additional arguments in call to overwrite default values (above)
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -o|--overwrite_conf)
+        OVERWRITE_CONF=true
+        shift
+        ;;
+        *)    # other options
+        MONASCA_SETUP_VARS="${MONASCA_SETUP_VARS} ${key}"
+        shift
+        ;;
+    esac
+done
+
+run_monasca_setup "${MONASCA_SETUP_VARS}"
 
 generate_supervisor_config
 
