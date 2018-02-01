@@ -276,7 +276,10 @@ You can find an example of an upper constraints file
 In case the `<version_number>` is omitted, the newest one will be used.
 
 ### Running the installer
-The monasca-ui plugin can be installed via the following command:
+
+The monasca-ui plugin can be installed via the following command (replace
+every occurrence of `<monasca_ui_dir>` with the directory where monasca-ui
+should be installed):
 ```
 ./monasca-ui-<version>.run --target <monasca_ui_dir>
 ```
@@ -309,7 +312,7 @@ You may also have to append the Python system path in the `manage.py` script.
 
 Then it is required to enable the monasca-ui plugin. Simply create
 symbolic links in horizon installation pointing to the monasca-ui
-installation:
+installation (`<horizon_dir>` is a directory with your running Horizon code):
 
 ```
 ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/enabled/_50_admin_add_monitoring_panel.py \
@@ -328,11 +331,19 @@ In this file you need to configure Kibana IP in the following line:
 For reference please consult monasca-ui documentation.
 
 After that, you need to restart the apache server:
+
+On Debian and Suse derived systems:
 ```
 systemctl restart apache2
 ```
 
+On RedHat:
+```
+systemctl restart httpd
+```
+
 ### Uninstalling Monasca UI plugin
+
 Remove the symlinks:
 ```
 rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
@@ -346,10 +357,20 @@ and save.
 
 Delete created files:
 ```
-rm -rf <installation_dir>/monasca_ui
+rm -rf <monasca_ui_dir>/monasca_ui
 ```
 
+Also you will need to remove Python system path appended to `manage.py`
+if you needed to add it to make monasca-ui run properly.
+
 Restart the apache server
+
+On Debian and Suse derived systems:
 ```
 systemctl restart apache2
+```
+
+On RedHat:
+```
+systemctl restart httpd
 ```
