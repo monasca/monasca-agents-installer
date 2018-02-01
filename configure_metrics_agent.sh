@@ -26,7 +26,7 @@ function protect_overwrite() {
     if [ -f "${protected_file}" ]; then
         if [ "${OVERWRITE_CONF}" = "false" ]; then
             warn "${protected_file} already exists"
-            warn "If you want to overwrite it you need to use '--overwrite'"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
             \cp -f "${protected_file}" "${protected_file}.backup"
             return
         else
@@ -40,7 +40,7 @@ function protect_restore() {
     local protected_file="$1"
     if [ "${OVERWRITE_CONF}" = "false" ]; then
         warn "Restoring original ${protected_file}"
-        warn "If you want to overwrite it you need to use '--overwrite'"
+        warn "If you want to overwrite it you need to use '--overwrite_conf'"
         \mv -f "${protected_file}.backup" "${protected_file}"
         return
     fi
