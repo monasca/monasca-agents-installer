@@ -25,15 +25,17 @@ function protect_overwrite() {
     local protected_files=("$@")
 
     for protected_file in "${protected_files[@]}"; do
-        if [ -f "${protected_file}" ]; then
-            if [ "${OVERWRITE_CONF}" = "false" ]; then
-                warn "${protected_file} already exists"
-                warn "If you want to overwrite it you need to use '--overwrite_conf'"
-                \cp -f "${protected_file}" "${protected_file}.backup"
-                return
-            else
-                inf "Existing ${protected_file} file will be overwritten"
-            fi
+        if [ ! -f "${protected_file}" ]; then
+            # No file to backup
+            return
+        fi
+        if [ "${OVERWRITE_CONF}" = "false" ]; then
+            warn "${protected_file} already exists"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
+            \cp -f "${protected_file}" "${protected_file}.backup"
+            return
+        else
+            inf "Existing ${protected_file} file will be overwritten"
         fi
     done
 }
@@ -43,12 +45,16 @@ function protect_restore() {
     local protected_files=("$@")
 
     for protected_file in "${protected_files[@]}"; do
-      if [ "${OVERWRITE_CONF}" = "false" ]; then
-          warn "Restoring original ${protected_file}"
-          warn "If you want to overwrite it you need to use '--overwrite_conf'"
-          \mv -f "${protected_file}.backup" "${protected_file}"
-          return
-      fi
+        if [ ! -f "${protected_file}.backup" ]; then
+            warn "No backup file for ${protected_file}, skipping"
+            return
+        fi
+        if [ "${OVERWRITE_CONF}" = "false" ]; then
+            warn "Restoring original ${protected_file}"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
+            \mv -f "${protected_file}.backup" "${protected_file}"
+            return
+        fi
     done
 }
 
