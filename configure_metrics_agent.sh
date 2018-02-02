@@ -45,11 +45,11 @@ function protect_restore() {
     local protected_files=("$@")
 
     for protected_file in "${protected_files[@]}"; do
-        if [ ! -f "${protected_file}.backup" ]; then
-            warn "No backup file for ${protected_file}, skipping"
-            return
-        fi
         if [ "${OVERWRITE_CONF}" = "false" ]; then
+            if [ ! -f "${protected_file}.backup" ]; then
+              warn "No backup file ${protected_file}.backup found, skipping"
+              return
+            fi
             warn "Restoring original ${protected_file}"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
             \mv -f "${protected_file}.backup" "${protected_file}"
