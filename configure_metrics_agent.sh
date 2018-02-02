@@ -22,28 +22,34 @@ sudo mkdir -p /etc/monasca
 # Check if file exist, if yes and OVERWRITE_CONF set to false, create backup
 # in same folder
 function protect_overwrite() {
-    local protected_file="$1"
-    if [ -f "${protected_file}" ]; then
-        if [ "${OVERWRITE_CONF}" = "false" ]; then
-            warn "${protected_file} already exists"
-            warn "If you want to overwrite it you need to use '--overwrite_conf'"
-            \cp -f "${protected_file}" "${protected_file}.backup"
-            return
-        else
-            inf "Existing ${protected_file} file will be overwritten"
+    local protected_files=("$@")
+
+    for protected_file in "${protected_files[@]}"; do
+        if [ -f "${protected_file}" ]; then
+            if [ "${OVERWRITE_CONF}" = "false" ]; then
+                warn "${protected_file} already exists"
+                warn "If you want to overwrite it you need to use '--overwrite_conf'"
+                \cp -f "${protected_file}" "${protected_file}.backup"
+                return
+            else
+                inf "Existing ${protected_file} file will be overwritten"
+            fi
         fi
-    fi
+    done
 }
 
 # Restore file to original location from backup copy if OVERWRITE_CONF is false
 function protect_restore() {
-    local protected_file="$1"
-    if [ "${OVERWRITE_CONF}" = "false" ]; then
-        warn "Restoring original ${protected_file}"
-        warn "If you want to overwrite it you need to use '--overwrite_conf'"
-        \mv -f "${protected_file}.backup" "${protected_file}"
-        return
-    fi
+    local protected_files=("$@")
+
+    for protected_file in "${protected_files[@]}"; do
+      if [ "${OVERWRITE_CONF}" = "false" ]; then
+          warn "Restoring original ${protected_file}"
+          warn "If you want to overwrite it you need to use '--overwrite_conf'"
+          \mv -f "${protected_file}.backup" "${protected_file}"
+          return
+      fi
+    done
 }
 
 function run_monasca_setup() {
@@ -51,9 +57,12 @@ function run_monasca_setup() {
 
     # All this files will be uncoditionaly overwritten by monasca-setup
     # so we are creating they backups if OVERWRITE_CONF is set to false
-    protect_overwrite "${MON_AGENT_DIR}/agent.yaml"
-    protect_overwrite "${MON_AGENT_DIR}/supervisor.conf"
-    protect_overwrite "${MON_SYSTEMD_DIR}/monasca-agent.service"
+    conf_files=(
+        "${MON_AGENT_DIR}/agent.yaml"
+        "${MON_AGENT_DIR}/supervisor.conf"
+        "${MON_SYSTEMD_DIR}/monasca-agent.service"
+    )
+    protect_overwrite "${conf_files[@]}"
 
     inf "Running monasca-setup..."
     sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args}"
@@ -61,7 +70,7 @@ function run_monasca_setup() {
     protect_restore "${MON_AGENT_DIR}/agent.yaml"
 }
 
-generate_supervisor_config() {
+function generate_supervisor_config() {
     if [ "${OVERWRITE_CONF}" = "false" ]; then
         protect_restore "${MON_AGENT_DIR}/supervisor.conf"
         return
@@ -129,7 +138,7 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 }
 
 # Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
-create_system_service_file() {
+function create_system_service_file() {
     if [ "${OVERWRITE_CONF}" = "false" ]; then
         protect_restore "${MON_SYSTEMD_DIR}/monasca-agent.service"
         return
@@ -161,7 +170,7 @@ WantedBy=multi-user.target" > "${tmp_service_file}"
     inf "${systemd_file} created"
 }
 
-set_attributes() {
+function set_attributes() {
 
     # Set proper attributes of files
     METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca")
@@ -176,7 +185,6 @@ set_attributes() {
 }
 
 OVERWRITE_CONF=false
-
 MONASCA_SETUP_VARS=""
 
 # check for additional arguments in call to overwrite default values (above)
