@@ -158,14 +158,19 @@ This will create and run a new service file `/etc/systemd/system/monasca-agent.s
 with the configuration set as per the arguments mentioned above.
 
 ### Uninstalling Metrics agent
-Stop the services:
+
+Stop the service and delete files related to it:
 ```
 systemctl stop monasca-agent
 systemctl disable monasca-agent
+sudo rm -f /etc/systemd/system/monasca-agent.service
+systemctl daemon-reload
+systemctl reset-failed monasca-agent
 ```
 
 In the following description, `[target_dir]` is the target directory specified
-at the time of running `monasca-agent-[version].run`.
+at the time of running `monasca-agent-[version].run`
+(e.g. `/opt/monasca-agent`).
 
 Delete created files:
 ```
@@ -173,10 +178,9 @@ sudo rm -rf [target_dir]
 sudo rm -rf /etc/monasca/agent/
 sudo rm -f /etc/sudoers.d/mon-agent
 ```
-Delete the service related to the agent.
+Delete logs:
 ```
-sudo rm -f /etc/systemd/system/monasca-agent.service
-systemctl daemon-reload
+sudo rm -rf /var/log/monasca/agent/
 ```
 Finally, remove `mon-agent` user (`-r` will also remove user's home directory):
 ```
