@@ -249,21 +249,23 @@ Additionally, you can add the `--no_service` to omit the step of automatically
 creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
 ### Uninstalling Logs agent
-Stop the service:
+
+Stop the service and delete files related to it:
 ```
 systemctl stop monasca-log-agent
 systemctl disable monasca-log-agent
+rm -f /etc/systemd/system/monasca-log-agent.service
+systemctl daemon-reload
+systemctl reset-failed monasca-log-agent
 ```
 
 In the following description, `[target_dir]` is the target directory specified
-at the time of running `log-agent-[version].run`.
+at the time of running `log-agent-[version].run`
+(e.g. `/opt/monasca-log-agent`).
 
 Delete obsolete files:
 ```
 rm -rf [target_dir]/
-rm -f /etc/systemd/system/monasca-log-agent.service
-systemctl daemon-reload
-systemctl reset-failed monasca-log-agent
 ```
 
 ## Monasca-ui plugin
