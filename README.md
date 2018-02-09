@@ -133,6 +133,7 @@ run the following command:
 ```
 ./monasca-agent.run \
     --target /opt/monasca-agent -- \
+    --overwrite_conf \
     --username <username> \
     --password <password> \
     --keystone_url <keystone_url> \
@@ -153,6 +154,10 @@ run the following command:
 | `monasca_statsd_port` | no       | `8125`  | `8126`          | Integer value for statsd daemon port number. **If default port number is used, set the other number (e.g. 8126) which is not used.** |
 
 For more parameters, please see [Monasca Agent Documentation](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md#explanation-of-primary-monasca-setup-command-line-parameters).
+
+By default if files: `agent.yaml`, `supervisor.conf`
+and `monasca-agent.service` exists they are not overwritten so if you want
+to update them with new settings you need to add `--overwrite_conf` option.
 
 This will create and run a new service file `/etc/systemd/system/monasca-agent.service`
 with the configuration set as per the arguments mentioned above.
@@ -217,7 +222,7 @@ file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
     --target /opt/monasca-log-agent -- \
-    --overwrite_files \
+    --overwrite_conf \
     --monasca_log_api_url <monasca log api url> \
     --keystone_auth_url <keystone authorisation url> \
     --project_name <project name> \
@@ -243,7 +248,7 @@ To include all the files in a directory, use the `*` wild card (eg. `/var/log/*`
 | `input_file_path_n`   | no       | `unset`                        | `/var/log/*`                   | Input log file path. **If this variable is not specified, default log agent configuration file is created.** |
 
 By default no file is overwritten so if you want to replace existing
-configuration and service file you need to add `--overwrite_files` option.
+configuration and service file you need to add `--overwrite_conf` option.
 
 Additionally, you can add the `--no_service` to omit the step of automatically
 creating `monasca-log-agent.service` in `/etc/systemd/system/`

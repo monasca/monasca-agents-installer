@@ -17,9 +17,9 @@ create_system_service_file() {
     local systemd_file="$systemd_dir/monasca-log-agent.service"
 
     if [ -f "${systemd_file}" ]; then
-        if [ "$OVERWRITE_FILES" = "false" ]; then
+        if [ "$OVERWRITE_CONF" = "false" ]; then
             warn "Service file already exists"
-            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
             return
         else
             inf "Existing service file will be overwritten"
@@ -52,9 +52,9 @@ create_system_service_file() {
 
 generate_specific_config_file() {
     if [ -f "${INSTALL_DIR}/conf/agent.conf" ]; then
-        if [ "$OVERWRITE_FILES" = "false" ]; then
+        if [ "$OVERWRITE_CONF" = "false" ]; then
             warn "${INSTALL_DIR}/conf/agent.conf already exists"
-            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
             return
         else
             inf "Existing agent.conf file will be overwritten"
@@ -111,9 +111,9 @@ generate_specific_config_file() {
 
 generate_default_config_file() {
     if [ -f "${INSTALL_DIR}/conf/agent.conf" ]; then
-        if [ "$OVERWRITE_FILES" = "false" ]; then
+        if [ "$OVERWRITE_CONF" = "false" ]; then
             warn "${INSTALL_DIR}/conf/agent.conf already exists"
-            warn "If you want to overwrite it you need to use '--overwrite_files'"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
             return
         else
             inf "Existing agent.conf file will be overwritten"
@@ -150,7 +150,7 @@ PASSWORD="password"
 USER_DOMAIN_NAME="default"
 PROJECT_DOMAIN_NAME="default"
 NO_SERVICE=false
-OVERWRITE_FILES=false
+OVERWRITE_CONF=false
 FILES=""
 
 # check for additional arguments in call to override default values (above)
@@ -195,8 +195,8 @@ do
         HOSTNAME="$2"
         shift 2
         ;;
-        -o|--overwrite_files)
-        OVERWRITE_FILES=true
+        -o|--overwrite_conf)
+        OVERWRITE_CONF=true
         shift
         ;;
         *)    # unknown option
@@ -215,7 +215,7 @@ echo PASSWORD             = "${PASSWORD}"
 echo USER_DOMAIN_NAME     = "${USER_DOMAIN_NAME}"
 echo PROJECT_DOMAIN_NAME  = "${PROJECT_DOMAIN_NAME}"
 echo DIMENSIONS           = "[ \"hostname:$HOSTNAME\"]"
-echo OVERWRITE_FILES      = "${OVERWRITE_FILES}"
+echo OVERWRITE_CONF       = "${OVERWRITE_CONF}"
 echo -e INPUT FILE\(S\) PATH\(S\) = "${FILES}"
 
 # Generate agent.conf file
