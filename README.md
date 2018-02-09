@@ -217,7 +217,7 @@ To create an agent configuration file (agent.conf), run
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run
 ```
-Use the following arguments to modify the default values of the`agent.conf`
+Use the following arguments to modify the default values of the `agent.conf`
 file, followed by any number of input file paths:
 ```
 ./log-agent-<logstash_version>_<logstash_output_monasca_log_api_version>.run \
@@ -247,8 +247,9 @@ To include all the files in a directory, use the `*` wild card (eg. `/var/log/*`
 | `hostname`            | no       | `hostname`                     | `myhostname`                   | Hostname |
 | `input_file_path_n`   | no       | `unset`                        | `/var/log/*`                   | Input log file path. **If this variable is not specified, default log agent configuration file is created.** |
 
-By default no file is overwritten so if you want to replace existing
-configuration and service file you need to add `--overwrite_conf` option.
+By default if files `agent.conf` and `monasca-log-agent.service` exists
+they are not overwritten so if you want to replace existing configuration
+and service file you need to add `--overwrite_conf` option.
 
 Additionally, you can add the `--no_service` to omit the step of automatically
 creating `monasca-log-agent.service` in `/etc/systemd/system/`
@@ -292,10 +293,15 @@ The monasca-ui plugin can be installed via the following command (replace
 every occurrence of `<monasca_ui_dir>` with the directory where monasca-ui
 should be installed):
 ```
-./monasca-ui-<version>.run --target <monasca_ui_dir>
+./monasca-ui-<version>.run --target <monasca_ui_dir> -- \
+    --overwrite_conf
 ```
 
 This will extract the plugin with all the required dependencies.
+
+By default `local_settings.py` configuration file is not overwritten
+if it exists already. If you want to replace it you need to use
+`--overwrite_conf` option.
 
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
