@@ -7,7 +7,7 @@ inf() { log "INFO: $1"; }
 
 inf "Configuring log agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-INSTALL_DIR=$(cd "$BIN_DIR/.." && pwd)
+INSTALL_DIR="$(cd "$BIN_DIR/.." && pwd)"
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
 
 # Creates monasca-log-agent.service file in etc/systemd/system/ with 0664 permissions
