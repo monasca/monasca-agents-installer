@@ -59,7 +59,7 @@ function protect_restore() {
 }
 
 function run_monasca_setup() {
-    local all_args="$1"
+    local all_args=("$@")
 
     # All this files will be uncoditionaly overwritten by monasca-setup
     # so we are creating they backups if OVERWRITE_CONF is set to false
@@ -71,7 +71,7 @@ function run_monasca_setup() {
     protect_overwrite "${conf_files[@]}"
 
     inf "Running monasca-setup..."
-    sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args}"
+    sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args[@]}"
 
     protect_restore "${MON_AGENT_DIR}/agent.yaml"
 }
@@ -191,7 +191,7 @@ function set_attributes() {
 }
 
 OVERWRITE_CONF=false
-MONASCA_SETUP_VARS=""
+MONASCA_SETUP_VARS=()
 
 # check for additional arguments in call to overwrite default values (above)
 while [[ $# -gt 0 ]]
@@ -204,13 +204,13 @@ do
         shift
         ;;
         *)    # other options
-        MONASCA_SETUP_VARS="${MONASCA_SETUP_VARS} ${key}"
+        MONASCA_SETUP_VARS+=("${key}")
         shift
         ;;
     esac
 done
 
-run_monasca_setup "${MONASCA_SETUP_VARS}"
+run_monasca_setup "${MONASCA_SETUP_VARS[@]}"
 
 generate_supervisor_config
 
