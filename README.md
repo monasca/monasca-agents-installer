@@ -173,13 +173,13 @@ sudo systemctl daemon-reload
 sudo systemctl reset-failed monasca-agent
 ```
 
-In the following description, `[target_dir]` is the target directory specified
+In the following description, `<target_dir>` is the target directory specified
 at the time of running `monasca-agent-[version].run`
 (e.g. `/opt/monasca-agent`).
 
 Delete created files:
 ```
-sudo rm -rf [target_dir]
+sudo rm -rf <target_dir>
 sudo rm -rf /etc/monasca/agent/
 sudo rm -f /etc/sudoers.d/mon-agent
 ```
@@ -264,13 +264,13 @@ sudo systemctl daemon-reload
 sudo systemctl reset-failed monasca-log-agent
 ```
 
-In the following description, `[target_dir]` is the target directory specified
+In the following description, `<target_dir>` is the target directory specified
 at the time of running `log-agent-[version].run`
 (e.g. `/opt/monasca-log-agent`).
 
 Delete obsolete files:
 ```
-sudo rm -rf [target_dir]
+sudo rm -rf <target_dir>
 ```
 
 ## Monasca-ui plugin
