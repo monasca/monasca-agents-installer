@@ -166,11 +166,11 @@ with the configuration set as per the arguments mentioned above.
 
 Stop the service and delete files related to it:
 ```
-systemctl stop monasca-agent
-systemctl disable monasca-agent
+sudo systemctl stop monasca-agent
+sudo systemctl disable monasca-agent
 sudo rm -f /etc/systemd/system/monasca-agent.service
-systemctl daemon-reload
-systemctl reset-failed monasca-agent
+sudo systemctl daemon-reload
+sudo systemctl reset-failed monasca-agent
 ```
 
 In the following description, `[target_dir]` is the target directory specified
@@ -257,11 +257,11 @@ creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
 Stop the service and delete files related to it:
 ```
-systemctl stop monasca-log-agent
-systemctl disable monasca-log-agent
-rm -f /etc/systemd/system/monasca-log-agent.service
-systemctl daemon-reload
-systemctl reset-failed monasca-log-agent
+sudo systemctl stop monasca-log-agent
+sudo systemctl disable monasca-log-agent
+sudo rm -f /etc/systemd/system/monasca-log-agent.service
+sudo systemctl daemon-reload
+sudo systemctl reset-failed monasca-log-agent
 ```
 
 In the following description, `[target_dir]` is the target directory specified
@@ -270,7 +270,7 @@ at the time of running `log-agent-[version].run`
 
 Delete obsolete files:
 ```
-rm -rf [target_dir]/
+sudo rm -rf [target_dir]
 ```
 
 ## Monasca-ui plugin
@@ -357,8 +357,8 @@ systemctl restart httpd
 
 Remove the symlinks:
 ```
-rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
-rm <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
+sudo rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+sudo rm <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 Remove the line with the instruction to append site-packages in the wsgi file:
 
@@ -368,7 +368,7 @@ and save.
 
 Delete created files:
 ```
-rm -rf <monasca_ui_dir>/monasca_ui
+sudo rm -rf <monasca_ui_dir>/monasca_ui
 ```
 
 Also you will need to remove Python system path appended to `manage.py`
@@ -378,10 +378,10 @@ Restart the apache server
 
 On Debian and Suse derived systems:
 ```
-systemctl restart apache2
+sudo systemctl restart apache2
 ```
 
 On RedHat:
 ```
-systemctl restart httpd
+sudo systemctl restart httpd
 ```
