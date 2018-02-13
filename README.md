@@ -297,10 +297,13 @@ should be installed):
 
 This will extract the plugin with all the required dependencies.
 
+`<horizon_dir>` is a directory with your running Horizon code
+for example it could be `/srv/www/openstack-dashboard`.
+
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
 the Horizon system path. You need to find your wsgi script for Horizon
-and edit it adding:
+(in `<horizon_dir>/openstack_dashboard/wsgi` folder) and edit it adding:
 
 ```
 sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/")
@@ -316,14 +319,14 @@ OS) for the appropriate site configuration file:
 Then go through the files in there and look for a line indicating the wsgi
 configuration file, for example:
 ```
-WSGIScriptAlias / /srv/www/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
+WSGIScriptAlias / <horizon_dir>/openstack_dashboard/wsgi/django.wsgi
 ```
 
 You may also have to append the Python system path in the `manage.py` script.
 
 Then it is required to enable the monasca-ui plugin. Simply create
 symbolic links in horizon installation pointing to the monasca-ui
-installation (`<horizon_dir>` is a directory with your running Horizon code):
+installation:
 
 ```
 ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/enabled/_50_admin_add_monitoring_panel.py \
