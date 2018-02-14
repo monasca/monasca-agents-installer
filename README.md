@@ -166,20 +166,20 @@ with the configuration set as per the arguments mentioned above.
 
 Stop the service and delete files related to it:
 ```
-systemctl stop monasca-agent
-systemctl disable monasca-agent
+sudo systemctl stop monasca-agent
+sudo systemctl disable monasca-agent
 sudo rm -f /etc/systemd/system/monasca-agent.service
-systemctl daemon-reload
-systemctl reset-failed monasca-agent
+sudo systemctl daemon-reload
+sudo systemctl reset-failed monasca-agent
 ```
 
-In the following description, `[target_dir]` is the target directory specified
+In the following description, `<target_dir>` is the target directory specified
 at the time of running `monasca-agent-[version].run`
 (e.g. `/opt/monasca-agent`).
 
 Delete created files:
 ```
-sudo rm -rf [target_dir]
+sudo rm -rf <target_dir>
 sudo rm -rf /etc/monasca/agent/
 sudo rm -f /etc/sudoers.d/mon-agent
 ```
@@ -257,20 +257,20 @@ creating `monasca-log-agent.service` in `/etc/systemd/system/`
 
 Stop the service and delete files related to it:
 ```
-systemctl stop monasca-log-agent
-systemctl disable monasca-log-agent
-rm -f /etc/systemd/system/monasca-log-agent.service
-systemctl daemon-reload
-systemctl reset-failed monasca-log-agent
+sudo systemctl stop monasca-log-agent
+sudo systemctl disable monasca-log-agent
+sudo rm -f /etc/systemd/system/monasca-log-agent.service
+sudo systemctl daemon-reload
+sudo systemctl reset-failed monasca-log-agent
 ```
 
-In the following description, `[target_dir]` is the target directory specified
+In the following description, `<target_dir>` is the target directory specified
 at the time of running `log-agent-[version].run`
 (e.g. `/opt/monasca-log-agent`).
 
 Delete obsolete files:
 ```
-rm -rf [target_dir]/
+sudo rm -rf <target_dir>
 sudo rm -rf /var/log/monasca/log-agent/
 ```
 
@@ -298,10 +298,13 @@ should be installed):
 
 This will extract the plugin with all the required dependencies.
 
+`<horizon_dir>` is a directory with your running Horizon code
+for example it could be `/srv/www/openstack-dashboard`.
+
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
 the Horizon system path. You need to find your wsgi script for Horizon
-and edit it adding:
+(in `<horizon_dir>/openstack_dashboard/wsgi` folder) and edit it adding:
 
 ```
 sys.path.append("<monasca_ui_dir>/lib/python2.7/site-packages/")
@@ -317,14 +320,14 @@ OS) for the appropriate site configuration file:
 Then go through the files in there and look for a line indicating the wsgi
 configuration file, for example:
 ```
-WSGIScriptAlias / /srv/www/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
+WSGIScriptAlias / <horizon_dir>/openstack_dashboard/wsgi/django.wsgi
 ```
 
 You may also have to append the Python system path in the `manage.py` script.
 
 Then it is required to enable the monasca-ui plugin. Simply create
 symbolic links in horizon installation pointing to the monasca-ui
-installation (`<horizon_dir>` is a directory with your running Horizon code):
+installation:
 
 ```
 ln -s <monasca_ui_dir>/lib/python2.7/site-packages/monitoring/enabled/_50_admin_add_monitoring_panel.py \
@@ -358,8 +361,8 @@ systemctl restart httpd
 
 Remove the symlinks:
 ```
-rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
-rm <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
+sudo rm <horizon_dir>/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+sudo rm <horizon_dir>/openstack_dashboard/conf/monitoring_policy.json
 ```
 Remove the line with the instruction to append site-packages in the wsgi file:
 
@@ -369,7 +372,7 @@ and save.
 
 Delete created files:
 ```
-rm -rf <monasca_ui_dir>/monasca_ui
+sudo rm -rf <monasca_ui_dir>/monasca_ui
 ```
 
 Also you will need to remove Python system path appended to `manage.py`
@@ -379,10 +382,10 @@ Restart the apache server
 
 On Debian and Suse derived systems:
 ```
-systemctl restart apache2
+sudo systemctl restart apache2
 ```
 
 On RedHat:
 ```
-systemctl restart httpd
+sudo systemctl restart httpd
 ```
