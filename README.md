@@ -271,6 +271,7 @@ at the time of running `log-agent-[version].run`
 Delete obsolete files:
 ```
 sudo rm -rf <target_dir>
+sudo rm -rf /var/log/monasca/log-agent/
 ```
 
 ## Monasca-ui plugin
