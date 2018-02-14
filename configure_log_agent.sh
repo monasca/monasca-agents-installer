@@ -48,8 +48,11 @@ create_system_service_file() {
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
 
-    # Create folder for logs
-    sudo mkdir -p ${log_dir}
+    # Create folder and file for logs with proper permissions
+    sudo mkdir -p "${log_dir}"
+    sudo chmod 0750 "${log_dir}"
+    sudo touch "${log_dir}/log-agent.log"
+    sudo chmod 0644 "${log_dir}/log-agent.log"
 
     inf "${systemd_file} created"
 }
