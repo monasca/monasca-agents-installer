@@ -288,6 +288,11 @@ You can find an example of an upper constraints file
 [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
 In case the `<version_number>` is omitted, the newest one will be used.
 
+`<version_number>` could be standard SEMVER version number that is available
+on <https://pypi.org/project/monasca-ui/#history>. It also support creating
+installer straight from monasca-ui Git repository. For this you need
+to provide commit hash (e.g. `d58f0f6`), branch (e.g. `stable/pike`) or tag.
+
 ### Running the installer
 
 The monasca-ui plugin can be installed via the following command (replace
