@@ -293,6 +293,11 @@ on <https://pypi.org/project/monasca-ui/#history>. It also support creating
 installer straight from monasca-ui Git repository. For this you need
 to provide commit hash (e.g. `d58f0f6`), branch (e.g. `stable/pike`) or tag.
 
+You could create installer from custom fork of monasca-ui. Just set
+`MONASCA_UI_GIT_REPO` variable to your fork Git URI.
+
+`MONASCA_UI_GIT_REPO="git+git://github.com/openstack/monasca-ui.git" ./create_monasca_ui_installer.sh`
+
 ### Running the installer
 
 The monasca-ui plugin can be installed via the following command (replace

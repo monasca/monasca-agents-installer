@@ -14,6 +14,7 @@ MONASCA_UI_VERSION=${1:-$(pip search monasca-ui | grep monasca-ui | \
                             awk '{print $2}' | sed 's|(||' | sed 's|)||')}
 UPPER_CONSTRAINTS_FILE=${2:-""}
 MONASCA_UI_FROM_GIT=false
+: "${MONASCA_UI_GIT_REPO:="git+git://github.com/openstack/monasca-ui.git"}"
 
 MONASCA_UI_TMP_DIR="${TMP_DIR}/monasca-ui"
 
@@ -38,7 +39,7 @@ if [ -z "${UPPER_CONSTRAINTS_FILE}" ]; then
 
     if [ ${MONASCA_UI_FROM_GIT} = true ]; then
         "${MONASCA_UI_TMP_DIR}"/bin/pip install \
-          "git+git://github.com/openstack/monasca-ui.git@${MONASCA_UI_VERSION}"
+          "${MONASCA_UI_GIT_REPO}@${MONASCA_UI_VERSION}"
     else
         "${MONASCA_UI_TMP_DIR}"/bin/pip install monasca-ui=="$MONASCA_UI_VERSION"
     fi
@@ -47,7 +48,7 @@ else
 
     if [ ${MONASCA_UI_FROM_GIT} = true ]; then
         "${MONASCA_UI_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" \
-          "git+git://github.com/openstack/monasca-ui.git@${MONASCA_UI_VERSION}"
+          "${MONASCA_UI_GIT_REPO}@${MONASCA_UI_VERSION}"
     else
         "${MONASCA_UI_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" \
           monasca-ui=="$MONASCA_UI_VERSION"
