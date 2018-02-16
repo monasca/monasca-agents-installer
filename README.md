@@ -299,9 +299,9 @@ should be installed):
 
 This will extract the plugin with all the required dependencies.
 
-By default `local_settings.py` configuration file is not overwritten
-if it exists already. If you want to replace it you need to use
-`--overwrite_conf` option.
+By default monitoring `local_settings.py` configuration file is
+not overwritten if it exists already. If you want to replace
+it you need to use `--overwrite_conf` option.
 
 Then it is necessary to perform a set of manual configuration steps.
 First of all, you need to append the monasca-ui virtualenv libraries to
