@@ -34,6 +34,14 @@ fi
 LOCAL_SETTINGS_FILE=$(find "${MONASCA_UI_TMP_DIR}" -name local_settings.py)
 sed -i -e "s/192.168.10.4:5601/<kibana_host>:5601/g" "${LOCAL_SETTINGS_FILE}"
 
+# Change name of the configuration file so it's not overwritten by default.
+# Then when installation script is run with `--overwrite_conf` we will
+# replace previous config file with this example file.
+mv "${LOCAL_SETTINGS_FILE}" "${LOCAL_SETTINGS_FILE}.example"
+
+# Clean Python binary files
+find "${MONASCA_UI_TMP_DIR}" -name '*.pyc' -delete
+
 virtualenv --relocatable "${MONASCA_UI_TMP_DIR}"
 
 cp configure_monasca_ui.sh "${MONASCA_UI_TMP_DIR}"/bin
