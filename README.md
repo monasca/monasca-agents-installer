@@ -278,15 +278,26 @@ sudo rm -rf /var/log/monasca/log-agent/
 ## Monasca-ui plugin
 
 ### Creating the installer package
+
 In order to create the monasca-ui installer, you need to run the
 following command:
 ```
-./create_monasca_ui_installer.sh <version_number> <upper_constraints_file>
+./create_monasca_ui_installer.sh -v <version_number> -u <upper_constraints_file>
 ```
 
 You can find an example of an upper constraints file
 [here](http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike).
 In case the `<version_number>` is omitted, the newest one will be used.
+
+`<version_number>` could be standard SEMVER version number that is available
+on <https://pypi.org/project/monasca-ui/#history>. It also support creating
+installer straight from official monasca-ui Git repository. For this you need
+to provide commit hash (e.g. `d58f0f6`), branch (e.g. `stable/pike`) or tag.
+
+You could create installer from custom fork of monasca-ui. Just set
+`--monasca_ui_repo` (short `-r`) argument to your fork Git URI.
+
+`./create_monasca_ui_installer.sh --monasca_ui_repo "git+git://github.com/example/monasca-ui.git"`
 
 ### Running the installer
 
