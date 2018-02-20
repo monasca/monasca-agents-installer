@@ -179,7 +179,7 @@ WantedBy=multi-user.target" > "${tmp_service_file}"
 function set_attributes() {
 
     # Set proper attributes of files
-    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca")
+    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca/agent")
 
     for directory in "${METRIC_DIRS[@]}"
     do
