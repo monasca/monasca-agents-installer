@@ -10,12 +10,13 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR="$(cd "$BIN_DIR/.." && pwd)"
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
 
+MON_LOG_AGENT_LOG_DIR="/var/log/monasca-log-agent"
+
 # Creates monasca-log-agent.service file in etc/systemd/system/ with 0664 permissions
 create_system_service_file() {
     local tmp_service_file="/tmp/monasca-log-agent.service"
     local systemd_dir="/etc/systemd/system"
     local systemd_file="$systemd_dir/monasca-log-agent.service"
-    local log_dir="/var/log/monasca/log-agent"
 
     if [ -f "${systemd_file}" ]; then
         if [ "$OVERWRITE_CONF" = "false" ]; then
@@ -36,7 +37,7 @@ create_system_service_file() {
     Group = root
     TimeoutStopSec = infinity
     KillMode = process
-    ExecStart = $LOGSTASH_DIR/bin/logstash --config $INSTALL_DIR/conf/agent.conf --log ${log_dir}/log-agent.log
+    ExecStart = $LOGSTASH_DIR/bin/logstash --config $INSTALL_DIR/conf/agent.conf --log ${MON_LOG_AGENT_LOG_DIR}/log-agent.log
     User = root
 
     [Install]
@@ -49,10 +50,10 @@ create_system_service_file() {
     rm -rf "${tmp_service_file}"
 
     # Create folder and file for logs with proper permissions
-    sudo mkdir -p "${log_dir}"
-    sudo chmod 0750 "${log_dir}"
-    sudo touch "${log_dir}/log-agent.log"
-    sudo chmod 0644 "${log_dir}/log-agent.log"
+    sudo mkdir -p "${MON_LOG_AGENT_LOG_DIR}"
+    sudo chmod 0750 "${MON_LOG_AGENT_LOG_DIR}"
+    sudo touch "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
+    sudo chmod 0644 "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
 
     inf "${systemd_file} created"
 }

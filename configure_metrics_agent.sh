@@ -12,6 +12,7 @@ MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 
 MON_AGENT_DIR="/etc/monasca/agent"
 MON_SYSTEMD_DIR="/etc/systemd/system"
+MON_AGENT_LOG_DIR="/var/log/monasca-agent"
 
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
     echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
@@ -98,7 +99,7 @@ supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 minfds = 1024
 minprocs = 200
 loglevel = info
-logfile = /var/log/monasca/agent/supervisord.log
+logfile = ${MON_AGENT_LOG_DIR}/supervisord.log
 logfile_maxbytes = 50MB
 nodaemon = false
 pidfile = /var/run/monasca-agent-supervisord.pid
@@ -179,7 +180,7 @@ WantedBy=multi-user.target" > "${tmp_service_file}"
 function set_attributes() {
 
     # Set proper attributes of files
-    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca/agent")
+    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "${MON_AGENT_LOG_DIR}")
 
     for directory in "${METRIC_DIRS[@]}"
     do
