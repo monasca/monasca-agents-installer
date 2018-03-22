@@ -36,7 +36,7 @@ function protect_overwrite() {
             warn "${protected_file} already exists"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
             # Create backup with preserving permissions
-            \cp -pf "${protected_file}" "${protected_file}.backup"
+            \cp -f --preserve "${protected_file}" "${protected_file}.backup"
             return
         else
             inf "Existing ${protected_file} file will be overwritten"
