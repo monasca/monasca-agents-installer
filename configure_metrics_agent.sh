@@ -12,6 +12,7 @@ MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 
 MON_AGENT_DIR="/etc/monasca/agent"
 MON_SYSTEMD_DIR="/etc/systemd/system"
+MON_DEFAULT_AGENT_LOG_DIR="/var/log/monasca-agent"
 
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
     echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
@@ -71,7 +72,8 @@ function run_monasca_setup() {
     protect_overwrite "${conf_files[@]}"
 
     inf "Running monasca-setup..."
-    sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args[@]}"
+    sudo "${BIN_DIR}/python" "${BIN_DIR}/monasca-setup" "${all_args[@]}" \
+        --log_dir "${MON_AGENT_LOG_DIR}"
 
     protect_restore "${MON_AGENT_DIR}/agent.yaml"
 }
@@ -98,7 +100,7 @@ supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 minfds = 1024
 minprocs = 200
 loglevel = info
-logfile = /var/log/monasca/agent/supervisord.log
+logfile = ${MON_AGENT_LOG_DIR}/supervisord.log
 logfile_maxbytes = 50MB
 nodaemon = false
 pidfile = /var/run/monasca-agent-supervisord.pid
@@ -179,7 +181,7 @@ WantedBy=multi-user.target" > "${tmp_service_file}"
 function set_attributes() {
 
     # Set proper attributes of files
-    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "/var/log/monasca/agent")
+    METRIC_DIRS=("${INSTALL_DIR}" "/etc/monasca" "${MON_AGENT_LOG_DIR}")
 
     for directory in "${METRIC_DIRS[@]}"
     do
@@ -191,6 +193,7 @@ function set_attributes() {
 }
 
 OVERWRITE_CONF=false
+CUSTOM_LOG_DIR=""
 MONASCA_SETUP_VARS=()
 
 # check for additional arguments in call to overwrite default values (above)
@@ -203,12 +206,20 @@ do
         OVERWRITE_CONF=true
         shift
         ;;
+        --log_dir)
+        # We change default to `/var/log/monasca-agent` but allow user
+        # to overwrite
+        CUSTOM_LOG_DIR="$2"
+        shift 2
+        ;;
         *)    # other options
         MONASCA_SETUP_VARS+=("${key}")
         shift
         ;;
     esac
 done
+
+MON_AGENT_LOG_DIR="${CUSTOM_LOG_DIR:-$MON_DEFAULT_AGENT_LOG_DIR}"
 
 run_monasca_setup "${MONASCA_SETUP_VARS[@]}"
 

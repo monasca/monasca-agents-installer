@@ -185,7 +185,7 @@ sudo rm -f /etc/sudoers.d/mon-agent
 ```
 Delete logs:
 ```
-sudo rm -rf /var/log/monasca/agent/
+sudo rm -rf /var/log/monasca-agent/
 ```
 Finally, remove `mon-agent` user (`-r` will also remove user's home directory):
 ```
@@ -272,7 +272,7 @@ at the time of running `log-agent-[version].run`
 Delete obsolete files:
 ```
 sudo rm -rf <target_dir>
-sudo rm -rf /var/log/monasca/log-agent/
+sudo rm -rf /var/log/monasca-log-agent/
 ```
 
 ## Monasca-ui plugin
