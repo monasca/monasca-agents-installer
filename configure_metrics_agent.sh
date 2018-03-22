@@ -170,7 +170,6 @@ ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chown mon-agent:mon-agent "${systemd_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
