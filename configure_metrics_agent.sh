@@ -5,7 +5,6 @@ error() { log "ERROR: $1"; }
 warn() { log "WARNING: $1"; }
 inf() { log "INFO: $1"; }
 
-inf "Configuring agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=$( cd "$BIN_DIR/.." && pwd )
 MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
@@ -13,6 +12,9 @@ MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 MON_AGENT_DIR="/etc/monasca/agent"
 MON_SYSTEMD_DIR="/etc/systemd/system"
 MON_DEFAULT_AGENT_LOG_DIR="/var/log/monasca-agent"
+
+inf "Installation directory: ${INSTALL_DIR}"
+inf "Configuring metrics agent..."
 
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
     echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
