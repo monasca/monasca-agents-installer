@@ -389,7 +389,7 @@ and save.
 
 Delete created files:
 ```
-sudo rm -rf <monasca_ui_dir>/monasca_ui
+sudo rm -rf <monasca_ui_dir>
 ```
 
 Also you will need to remove Python system path appended to `manage.py`
