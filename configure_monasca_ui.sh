@@ -5,9 +5,11 @@ error() { log "ERROR: $1"; }
 warn() { log "WARNING: $1"; }
 inf() { log "INFO: $1"; }
 
-inf "Configuring monasca-ui Horizon plugin..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR="$(cd "$BIN_DIR/.." && pwd)"
+
+inf "Installation directory: ${INSTALL_DIR}"
+inf "Configuring monasca-ui Horizon plugin..."
 
 function process_config() {
   LOCAL_SETTINGS_FILE=$(find "${INSTALL_DIR}" -name local_settings.py)

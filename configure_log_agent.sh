@@ -5,12 +5,14 @@ error() { log "ERROR: $1"; }
 warn() { log "WARNING: $1"; }
 inf() { log "INFO: $1"; }
 
-inf "Configuring log agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR="$(cd "$BIN_DIR/.." && pwd)"
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
 
 MON_LOG_AGENT_LOG_DIR="/var/log/monasca-log-agent"
+
+inf "Installation directory: ${INSTALL_DIR}"
+inf "Configuring log agent..."
 
 # Creates monasca-log-agent.service file in etc/systemd/system/ with 0664 permissions
 create_system_service_file() {

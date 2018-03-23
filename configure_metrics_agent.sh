@@ -5,7 +5,6 @@ error() { log "ERROR: $1"; }
 warn() { log "WARNING: $1"; }
 inf() { log "INFO: $1"; }
 
-inf "Configuring agent..."
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR=$( cd "$BIN_DIR/.." && pwd )
 MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
@@ -13,6 +12,9 @@ MON_SUDOERS_FILE="/etc/sudoers.d/mon-agent"
 MON_AGENT_DIR="/etc/monasca/agent"
 MON_SYSTEMD_DIR="/etc/systemd/system"
 MON_DEFAULT_AGENT_LOG_DIR="/var/log/monasca-agent"
+
+inf "Installation directory: ${INSTALL_DIR}"
+inf "Configuring metrics agent..."
 
 if [ ! -e "${MON_SUDOERS_FILE}" ]; then
     echo "mon-agent ALL=(ALL) NOPASSWD:ALL" | sudo tee "${MON_SUDOERS_FILE}" >> /dev/null
@@ -33,7 +35,8 @@ function protect_overwrite() {
         if [ "${OVERWRITE_CONF}" = "false" ]; then
             warn "${protected_file} already exists"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
-            \cp -f "${protected_file}" "${protected_file}.backup"
+            # Create backup with preserving permissions
+            \cp -f --preserve "${protected_file}" "${protected_file}.backup"
             return
         else
             inf "Existing ${protected_file} file will be overwritten"
@@ -170,7 +173,6 @@ ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chown mon-agent:mon-agent "${systemd_file}"
     sudo chmod 0664 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
