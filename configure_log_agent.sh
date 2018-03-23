@@ -8,6 +8,8 @@ inf() { log "INFO: $1"; }
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INSTALL_DIR="$(cd "$BIN_DIR/.." && pwd)"
 LOGSTASH_DIR="$INSTALL_DIR/$(ls "$BIN_DIR/.." | grep logstash)"
+LOGSTASH_SINCEDB_DIR="$INSTALL_DIR/sincedb"
+LOGSTASH_SINCEDB_CONFIG="/etc/profile.d/logstash_sincedb_dir.sh"
 
 MON_LOG_AGENT_LOG_DIR="/var/log/monasca-log-agent"
 
@@ -36,11 +38,12 @@ create_system_service_file() {
     Description = monasca-log-agent.service
 
     [Service]
+    User = root
     Group = root
     TimeoutStopSec = infinity
     KillMode = process
+    Environment = \"SINCEDB_DIR=${LOGSTASH_SINCEDB_DIR}\"
     ExecStart = $LOGSTASH_DIR/bin/logstash --config $INSTALL_DIR/conf/agent.conf --log ${MON_LOG_AGENT_LOG_DIR}/log-agent.log
-    User = root
 
     [Install]
     WantedBy = multi-user.target" > "${tmp_service_file}"
@@ -58,6 +61,31 @@ create_system_service_file() {
     sudo chmod 0644 "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
 
     inf "${systemd_file} created"
+}
+
+# Creates folder for Logstash Sincedb files and config for it
+create_sincedb_dir() {
+
+    if [ -f "${LOGSTASH_SINCEDB_CONFIG}" ]; then
+        if [ "$OVERWRITE_CONF" = "false" ]; then
+            warn "${LOGSTASH_SINCEDB_CONFIG} file already exists"
+            warn "If you want to overwrite it you need to use '--overwrite_conf'"
+            return
+        else
+            inf "Existing ${LOGSTASH_SINCEDB_CONFIG} file will be overwritten"
+        fi
+    fi
+
+    # Logstash $SINCEDB_DIR env variable is undocumented but we don't
+    # want Logstash to store Sincedb files in user $HOME directory.
+    echo "export SINCEDB_DIR='${INSTALL_DIR}/sincedb'" > \
+        "${LOGSTASH_SINCEDB_CONFIG}"
+    chmod 0644 "${LOGSTASH_SINCEDB_CONFIG}"
+    inf "${LOGSTASH_SINCEDB_CONFIG} created"
+
+    inf "Creating Logstash Sincedb folder in ${LOGSTASH_SINCEDB_DIR}"
+    mkdir --parents "${LOGSTASH_SINCEDB_DIR}"
+    chmod --recursive 0750 "${LOGSTASH_SINCEDB_DIR}"
 }
 
 generate_specific_config_file() {
@@ -227,6 +255,8 @@ echo PROJECT_DOMAIN_NAME  = "${PROJECT_DOMAIN_NAME}"
 echo DIMENSIONS           = "[ \"hostname:$HOSTNAME\"]"
 echo OVERWRITE_CONF       = "${OVERWRITE_CONF}"
 echo -e INPUT FILE\(S\) PATH\(S\) = "${FILES}"
+
+create_sincedb_dir
 
 # Generate agent.conf file
 if [ -z "$FILES" ]; then
