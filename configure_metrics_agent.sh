@@ -27,17 +27,17 @@ sudo mkdir -p /etc/monasca
 function protect_overwrite() {
     local protected_files=("$@")
 
+    if [ "${OVERWRITE_CONF}" = "true" ]; then
+        inf "Following files will be overwritten: ${protected_files[*]}"
+        return
+    fi
+
     for protected_file in "${protected_files[@]}"; do
-        if [ ! -f "${protected_file}" ]; then
-            # No file to backup
-            continue
-        elif [ "${OVERWRITE_CONF}" = "false" ]; then
+        if [ -f "${protected_file}" ]; then
             warn "${protected_file} already exists"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
             # Create backup with preserving permissions
             \cp -f --preserve "${protected_file}" "${protected_file}.backup"
-        else
-            inf "Existing ${protected_file} file will be overwritten"
         fi
     done
 }
