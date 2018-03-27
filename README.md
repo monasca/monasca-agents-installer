@@ -273,6 +273,7 @@ Delete obsolete files:
 ```
 sudo rm -rf <target_dir>
 sudo rm -rf /var/log/monasca-log-agent/
+sudo rm -rf /etc/profile.d/logstash_sincedb_dir.sh
 ```
 
 ## Monasca-ui plugin
