@@ -30,14 +30,12 @@ function protect_overwrite() {
     for protected_file in "${protected_files[@]}"; do
         if [ ! -f "${protected_file}" ]; then
             # No file to backup
-            return
-        fi
-        if [ "${OVERWRITE_CONF}" = "false" ]; then
+            continue
+        elif [ "${OVERWRITE_CONF}" = "false" ]; then
             warn "${protected_file} already exists"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
             # Create backup with preserving permissions
             \cp -f --preserve "${protected_file}" "${protected_file}.backup"
-            return
         else
             inf "Existing ${protected_file} file will be overwritten"
         fi
