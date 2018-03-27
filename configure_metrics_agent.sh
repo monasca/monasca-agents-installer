@@ -230,6 +230,7 @@ create_system_service_file
 set_attributes
 
 inf "Start Monasca Agent daemon"
+sudo systemctl daemon-reload
 sudo systemctl stop monasca-agent || true
 sudo systemctl enable monasca-agent
 sudo systemctl start monasca-agent
