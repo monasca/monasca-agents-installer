@@ -139,14 +139,14 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
     sudo cp -f "${tmp_conf_file}" "${supervisor_file}"
     sudo chown mon-agent:mon-agent "${supervisor_file}"
-    sudo chmod 0664 "${supervisor_file}"
+    sudo chmod 0640 "${supervisor_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_conf_file}"
 
     inf "${supervisor_file} created"
 }
 
-# Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
+# Creates monasca-metrics-agent.service file in /etc/systemd/system/
 function create_system_service_file() {
     if [ "${OVERWRITE_CONF}" = "false" ]; then
         protect_restore "${MON_SYSTEMD_DIR}/monasca-agent.service"
@@ -171,7 +171,7 @@ ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chmod 0664 "${systemd_file}"
+    sudo chmod 0644 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
 
