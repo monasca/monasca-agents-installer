@@ -27,19 +27,17 @@ sudo mkdir -p /etc/monasca
 function protect_overwrite() {
     local protected_files=("$@")
 
+    if [ "${OVERWRITE_CONF}" = "true" ]; then
+        inf "Following files will be overwritten: ${protected_files[*]}"
+        return
+    fi
+
     for protected_file in "${protected_files[@]}"; do
-        if [ ! -f "${protected_file}" ]; then
-            # No file to backup
-            return
-        fi
-        if [ "${OVERWRITE_CONF}" = "false" ]; then
+        if [ -f "${protected_file}" ]; then
             warn "${protected_file} already exists"
             warn "If you want to overwrite it you need to use '--overwrite_conf'"
             # Create backup with preserving permissions
             \cp -f --preserve "${protected_file}" "${protected_file}.backup"
-            return
-        else
-            inf "Existing ${protected_file} file will be overwritten"
         fi
     done
 }
@@ -141,14 +139,14 @@ programs=forwarder,collector,statsd" > "${tmp_conf_file}"
 
     sudo cp -f "${tmp_conf_file}" "${supervisor_file}"
     sudo chown mon-agent:mon-agent "${supervisor_file}"
-    sudo chmod 0664 "${supervisor_file}"
+    sudo chmod 0640 "${supervisor_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_conf_file}"
 
     inf "${supervisor_file} created"
 }
 
-# Creates monasca-metrics-agent.service file in etc/systemd/system/ with 0664 permissions
+# Creates monasca-metrics-agent.service file in /etc/systemd/system/
 function create_system_service_file() {
     if [ "${OVERWRITE_CONF}" = "false" ]; then
         protect_restore "${MON_SYSTEMD_DIR}/monasca-agent.service"
@@ -173,7 +171,7 @@ ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
 WantedBy=multi-user.target" > "${tmp_service_file}"
 
     sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chmod 0664 "${systemd_file}"
+    sudo chmod 0644 "${systemd_file}"
     sudo systemctl daemon-reload
     rm -rf "${tmp_service_file}"
 
@@ -232,6 +230,7 @@ create_system_service_file
 set_attributes
 
 inf "Start Monasca Agent daemon"
+sudo systemctl daemon-reload
 sudo systemctl stop monasca-agent || true
 sudo systemctl enable monasca-agent
 sudo systemctl start monasca-agent
