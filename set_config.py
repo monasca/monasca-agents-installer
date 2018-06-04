@@ -70,12 +70,11 @@ def main():
     for section in config_filter.sections():
         filter_name = config_filter.get(section, "name")
         filter_type = config_filter.get(section, "type")
-        filter_negate = config_filter.get(section, "negate")
         filter_pattern = config_filter.get(section, "pattern")
         filter_what = config_filter.get(section, "what")
         filter_negate = config_filter.get(section, "negate")
         filter_config.append({"name": filter_name, "type": filter_type,
-                              "pattern": filter_negate, "what": filter_what,
+                              "pattern": filter_pattern, "what": filter_what,
                               "negate": filter_negate})
 
     output_config = {"monasca_log_api_url": monasca_log_api_url,
