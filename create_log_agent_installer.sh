@@ -11,7 +11,7 @@ inf() { log "INFO: $1"; }
 # takes the first argument as the version. Defaults to the latest version
 # of monasca-agent if no argument is specified.
 LOGSTASH_VERSION=${1:-2.4.1}
-LOGSTASH_OUTPUT_MONASCA_LOG_API_VERSION=${2:-1.0.2}
+LOGSTASH_OUTPUT_MONASCA_LOG_API_VERSION=${2:-1.0.3}
 
 LOG_AGENT_TMP_DIR="${TMP_DIR}/monasca-log-agent"
 
