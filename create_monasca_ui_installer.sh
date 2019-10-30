@@ -14,7 +14,7 @@ MONASCA_UI_VERSION=$(pip search monasca-ui | grep monasca-ui | \
                      awk '{print $2}' | sed 's|(||' | sed 's|)||')
 UPPER_CONSTRAINTS_FILE=""
 MONASCA_UI_FROM_GIT=false
-MONASCA_UI_REPO="git+git://git.openstack.org/openstack/monasca-ui.git"
+MONASCA_UI_REPO="git+https://git.openstack.org/openstack/monasca-ui.git"
 
 MONASCA_UI_TMP_DIR="${TMP_DIR}/monasca-ui"
 
