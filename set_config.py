@@ -59,8 +59,15 @@ def main():
         input_demensions = config_input.get(section, "add_field")
         input_path = config_input.get(section, "path")
         input_tags = config_input.get(section, "tags")
+
+        filter_pattern = config_input.get(section, "pattern")
+        filter_what = config_input.get(section, "what")
+        filter_negate = config_input.get(section, "negate")
+
+	
         input_config.append({"dimensions": input_demensions, "path": input_path,
-                             "tags": input_tags})
+                             "tags": input_tags, "pattern": filter_pattern, "what": filter_what,
+                             "negate": filter_negate})
 
     config_filter = configparser.ConfigParser(interpolation=None)
     config_filter.read(filter_ini_path)
