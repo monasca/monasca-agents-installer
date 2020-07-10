@@ -43,7 +43,7 @@ create_system_service_file() {
     TimeoutStopSec = 90
     KillMode = process
     Environment = \"SINCEDB_DIR=${LOGSTASH_SINCEDB_DIR}\"
-    ExecStart = $LOGSTASH_DIR/bin/logstash --config $INSTALL_DIR/conf/agent.conf --log ${MON_LOG_AGENT_LOG_DIR}/log-agent.log
+    ExecStart = $LOGSTASH_DIR/bin/logstash --path.config $INSTALL_DIR/conf/agent.conf --path.log ${MON_LOG_AGENT_LOG_DIR}
 
     [Install]
     WantedBy = multi-user.target" > "${tmp_service_file}"
@@ -158,7 +158,7 @@ generate_default_config_file() {
         fi
     fi
 
-    sudo python "$BIN_DIR/set_config.py" \
+    sudo python3 "$BIN_DIR/set_config.py" \
         --tmp_config "$INSTALL_DIR/conf/agent.conf.j2" \
         --config "$INSTALL_DIR/conf/agent.conf" \
         --input_ini "$INSTALL_DIR/conf/input.ini" \

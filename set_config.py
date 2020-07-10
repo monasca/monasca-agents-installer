@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-import ConfigParser
+import configparser
 import sys
 from jinja2 import Template
 from optparse import OptionParser
@@ -50,7 +50,7 @@ def main():
     project_domain_name = options.project_domain_name
     hostname = options.hostname
 
-    config_input = ConfigParser.ConfigParser()
+    config_input = configparser.ConfigParser(interpolation=None)
     config_input.read(input_ini_path)
 
     input_config = []
@@ -62,7 +62,7 @@ def main():
         input_config.append({"dimensions": input_demensions, "path": input_path,
                              "tags": input_tags})
 
-    config_filter = ConfigParser.ConfigParser()
+    config_filter = configparser.ConfigParser(interpolation=None)
     config_filter.read(filter_ini_path)
 
     filter_config = []
