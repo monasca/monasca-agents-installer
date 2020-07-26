@@ -78,8 +78,7 @@ def main():
 
     with open(in_path, 'r') as in_file, open(out_path, 'w') as out_file:
         t = Template(in_file.read())
-        out_file.write(t.render({"input": input_config, "filter": filter_config,
-                                 "output": output_config}))
+        out_file.write(t.render({"input": input_config, "output": output_config}))
 
 if __name__ == '__main__':
     main()

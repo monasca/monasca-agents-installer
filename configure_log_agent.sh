@@ -162,7 +162,6 @@ generate_default_config_file() {
         --tmp_config "$INSTALL_DIR/conf/agent.conf.j2" \
         --config "$INSTALL_DIR/conf/agent.conf" \
         --input_ini "$INSTALL_DIR/conf/input.ini" \
-        --filter_ini "$INSTALL_DIR/conf/filter.ini" \
         --monasca_log_api_url "$MONASCA_LOG_API_URL" \
         --keystone_auth_url "$KEYSTONE_AUTH_URL" \
         --project_name "$PROJECT_NAME" \
