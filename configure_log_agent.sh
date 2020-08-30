@@ -57,8 +57,6 @@ create_system_service_file() {
     # Create folder and file for logs with proper permissions
     sudo mkdir -p "${MON_LOG_AGENT_LOG_DIR}"
     sudo chmod 0750 "${MON_LOG_AGENT_LOG_DIR}"
-    sudo touch "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
-    sudo chmod 0644 "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
 
     inf "${systemd_file} created"
 }
