@@ -42,6 +42,10 @@ create_system_service_file() {
     Group = root
     TimeoutStopSec = 90
     KillMode = process
+    StartLimitInterval=200
+    StartLimitBurst=3
+    Restart=on-failure
+    RestartSec=30
     Environment = \"SINCEDB_DIR=${LOGSTASH_SINCEDB_DIR}\"
     ExecStart = $LOGSTASH_DIR/bin/logstash --path.config $INSTALL_DIR/conf/agent.conf --path.logs ${MON_LOG_AGENT_LOG_DIR}
 
