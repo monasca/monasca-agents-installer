@@ -33,7 +33,6 @@ cp configure_log_agent.sh "${LOG_AGENT_TMP_DIR}"/bin
 cp set_config.py "${LOG_AGENT_TMP_DIR}"/bin
 cp agent.conf.j2 "${LOG_AGENT_TMP_DIR}"/conf
 cp input.ini "${LOG_AGENT_TMP_DIR}"/conf
-cp filter.ini "${LOG_AGENT_TMP_DIR}"/conf
 
 inf "Downloading latest Makeself"
 if [ -d "${MAKESELF_DIR}" ]; then

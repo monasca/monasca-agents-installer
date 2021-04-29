@@ -43,7 +43,7 @@ create_system_service_file() {
     TimeoutStopSec = 90
     KillMode = process
     Environment = \"SINCEDB_DIR=${LOGSTASH_SINCEDB_DIR}\"
-    ExecStart = $LOGSTASH_DIR/bin/logstash --config $INSTALL_DIR/conf/agent.conf --log ${MON_LOG_AGENT_LOG_DIR}/log-agent.log
+    ExecStart = $LOGSTASH_DIR/bin/logstash --path.config $INSTALL_DIR/conf/agent.conf --path.logs ${MON_LOG_AGENT_LOG_DIR}
 
     [Install]
     WantedBy = multi-user.target" > "${tmp_service_file}"
@@ -57,8 +57,6 @@ create_system_service_file() {
     # Create folder and file for logs with proper permissions
     sudo mkdir -p "${MON_LOG_AGENT_LOG_DIR}"
     sudo chmod 0750 "${MON_LOG_AGENT_LOG_DIR}"
-    sudo touch "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
-    sudo chmod 0644 "${MON_LOG_AGENT_LOG_DIR}/log-agent.log"
 
     inf "${systemd_file} created"
 }
@@ -158,11 +156,10 @@ generate_default_config_file() {
         fi
     fi
 
-    sudo python "$BIN_DIR/set_config.py" \
+    sudo python3 "$BIN_DIR/set_config.py" \
         --tmp_config "$INSTALL_DIR/conf/agent.conf.j2" \
         --config "$INSTALL_DIR/conf/agent.conf" \
         --input_ini "$INSTALL_DIR/conf/input.ini" \
-        --filter_ini "$INSTALL_DIR/conf/filter.ini" \
         --monasca_log_api_url "$MONASCA_LOG_API_URL" \
         --keystone_auth_url "$KEYSTONE_AUTH_URL" \
         --project_name "$PROJECT_NAME" \

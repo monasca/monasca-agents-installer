@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-import ConfigParser
+import configparser
 import sys
 from jinja2 import Template
 from optparse import OptionParser
@@ -25,7 +25,6 @@ def main():
     parser.add_option("--tmp_config", dest = "tmp_config")
     parser.add_option("--config", dest = "config")
     parser.add_option("--input_ini", dest = "input_ini")
-    parser.add_option("--filter_ini", dest = "filter_ini")
     parser.add_option("--monasca_log_api_url", dest = "monasca_log_api_url")
     parser.add_option("--keystone_auth_url", dest = "keystone_auth_url")
     parser.add_option("--project_name", dest = "project_name")
@@ -40,7 +39,6 @@ def main():
     in_path = options.tmp_config
     out_path = options.config
     input_ini_path = options.input_ini
-    filter_ini_path = options.filter_ini
     monasca_log_api_url = options.monasca_log_api_url
     keystone_auth_url = options.keystone_auth_url
     project_name = options.project_name
@@ -50,7 +48,7 @@ def main():
     project_domain_name = options.project_domain_name
     hostname = options.hostname
 
-    config_input = ConfigParser.ConfigParser()
+    config_input = configparser.ConfigParser(interpolation=None)
     config_input.read(input_ini_path)
 
     input_config = []
@@ -59,23 +57,15 @@ def main():
         input_demensions = config_input.get(section, "add_field")
         input_path = config_input.get(section, "path")
         input_tags = config_input.get(section, "tags")
+
+        filter_pattern = config_input.get(section, "pattern")
+        filter_what = config_input.get(section, "what")
+        filter_negate = config_input.get(section, "negate")
+
+	
         input_config.append({"dimensions": input_demensions, "path": input_path,
-                             "tags": input_tags})
-
-    config_filter = ConfigParser.ConfigParser()
-    config_filter.read(filter_ini_path)
-
-    filter_config = []
-
-    for section in config_filter.sections():
-        filter_name = config_filter.get(section, "name")
-        filter_type = config_filter.get(section, "type")
-        filter_pattern = config_filter.get(section, "pattern")
-        filter_what = config_filter.get(section, "what")
-        filter_negate = config_filter.get(section, "negate")
-        filter_config.append({"name": filter_name, "type": filter_type,
-                              "pattern": filter_pattern, "what": filter_what,
-                              "negate": filter_negate})
+                             "tags": input_tags, "pattern": filter_pattern, "what": filter_what,
+                             "negate": filter_negate})
 
     output_config = {"monasca_log_api_url": monasca_log_api_url,
                      "keystone_api_url": keystone_auth_url,
@@ -88,8 +78,7 @@ def main():
 
     with open(in_path, 'r') as in_file, open(out_path, 'w') as out_file:
         t = Template(in_file.read())
-        out_file.write(t.render({"input": input_config, "filter": filter_config,
-                                 "output": output_config}))
+        out_file.write(t.render({"input": input_config, "output": output_config}))
 
 if __name__ == '__main__':
     main()

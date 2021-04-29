@@ -4,6 +4,11 @@ input {
     add_field => {{ input_value.dimensions }}
     tags => {{ input_value.tags }}
     path => {{ input_value.path }}
+    codec => multiline {
+      negate => {{input_value.negate}}
+      pattern => {{input_value.pattern}}
+      what => {{input_value.what}}
+    }
   }
 {%- endfor %}
 }
