@@ -19,11 +19,11 @@ inf "Downloading Monasca Log Agent"
 inf "Logstash version: ${LOGSTASH_VERSION}"
 inf "Logstash output Monasca Log API plugin version: ${LOGSTASH_OUTPUT_MONASCA_LOG_API_VERSION}"
 mkdir -p "${LOG_AGENT_TMP_DIR}"/bin
-wget https://artifacts.elastic.co/downloads/logstash/logstash-"${LOGSTASH_VERSION}".tar.gz -N -P "${TMP_DIR}"/
+wget https://artifacts.elastic.co/downloads/logstash/logstash-oss-"${LOGSTASH_VERSION}".tar.gz -N -P "${TMP_DIR}"/
 wget https://rubygems.org/downloads/logstash-output-monasca_log_api-"${LOGSTASH_OUTPUT_MONASCA_LOG_API_VERSION}".gem \
     -N -P "${TMP_DIR}"/
 
-tar xf "${TMP_DIR}"/logstash-"${LOGSTASH_VERSION}".tar.gz -C "${LOG_AGENT_TMP_DIR}"
+tar xf "${TMP_DIR}"/logstash-oss-"${LOGSTASH_VERSION}".tar.gz -C "${LOG_AGENT_TMP_DIR}"
 
 mkdir -p "${LOG_AGENT_TMP_DIR}"/conf
 
