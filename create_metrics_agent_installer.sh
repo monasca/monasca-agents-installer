@@ -8,10 +8,7 @@ error() { log "ERROR: $1"; }
 warn() { log "WARNING: $1"; }
 inf() { log "INFO: $1"; }
 
-# takes the first argument as the version. Defaults to the latest version
-# of monasca-agent if no argument is specified.
-MONASCA_AGENT_VERSION=$(pip search monasca-agent | grep monasca-agent | \
-                        awk '{print $2}' | sed 's|(||' | sed 's|)||')
+MONASCA_AGENT_VERSION=""
 UPPER_CONSTRAINTS_FILE=""
 INSTALL_LIBVIRT_DEPENDENCIES=false
 
@@ -38,6 +35,11 @@ do
         ;;
     esac
 done
+
+if [ -z "$MONASCA_AGENT_VERSION" ]; then
+	echo "--monasca_agent_version argument is missing"
+	exit 1 
+fi
 
 MONASCA_AGENT_TMP_DIR="${TMP_DIR}/monasca-agent"
 PIP_DEPENDENCIES=("pymysql")
