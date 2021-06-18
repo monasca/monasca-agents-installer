@@ -67,7 +67,6 @@ function run_monasca_setup() {
     # so we are creating they backups if OVERWRITE_CONF is set to false
     conf_files=(
         "${MON_AGENT_DIR}/agent.yaml"
-        "${MON_AGENT_DIR}/supervisor.conf"
         "${MON_SYSTEMD_DIR}/monasca-agent.service"
     )
     protect_overwrite "${conf_files[@]}"
@@ -79,104 +78,6 @@ function run_monasca_setup() {
     protect_restore "${MON_AGENT_DIR}/agent.yaml"
 }
 
-function generate_supervisor_config() {
-    if [ "${OVERWRITE_CONF}" = "false" ]; then
-        protect_restore "${MON_AGENT_DIR}/supervisor.conf"
-        return
-    fi
-
-    local tmp_conf_file="/tmp/supervisor.conf"
-    local supervisor_file="${MON_AGENT_DIR}/supervisor.conf"
-
-    echo "[supervisorctl]
-serverurl = unix:///var/tmp/monasca-agent-supervisor.sock
-
-[unix_http_server]
-file=/var/tmp/monasca-agent-supervisor.sock
-
-[rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
-
-[supervisord]
-minfds = 1024
-minprocs = 200
-loglevel = info
-logfile = ${MON_AGENT_LOG_DIR}/supervisord.log
-logfile_maxbytes = 50MB
-nodaemon = false
-pidfile = /var/run/monasca-agent-supervisord.pid
-logfile_backups = 10
-
-[program:collector]
-command=${BIN_DIR}/monasca-collector foreground
-stdout_logfile=NONE
-stderr_logfile=NONE
-priority=999
-startsecs=2
-user=mon-agent
-autorestart=true
-
-[program:forwarder]
-command=${BIN_DIR}/monasca-forwarder
-stdout_logfile=NONE
-stderr_logfile=NONE
-startsecs=3
-priority=998
-user=mon-agent
-autorestart=true
-
-[program:statsd]
-command=${BIN_DIR}/monasca-statsd
-stdout_logfile=NONE
-stderr_logfile=NONE
-startsecs=3
-priority=998
-user=mon-agent
-autorestart=true
-
-[group:monasca-agent]
-programs=forwarder,collector,statsd" > "${tmp_conf_file}"
-
-    sudo cp -f "${tmp_conf_file}" "${supervisor_file}"
-    sudo chown mon-agent:mon-agent "${supervisor_file}"
-    sudo chmod 0640 "${supervisor_file}"
-    sudo systemctl daemon-reload
-    rm -rf "${tmp_conf_file}"
-
-    inf "${supervisor_file} created"
-}
-
-# Creates monasca-metrics-agent.service file in /etc/systemd/system/
-function create_system_service_file() {
-    if [ "${OVERWRITE_CONF}" = "false" ]; then
-        protect_restore "${MON_SYSTEMD_DIR}/monasca-agent.service"
-        return
-    fi
-
-    local tmp_service_file="/tmp/monasca-agent.service"
-    local systemd_file="${MON_SYSTEMD_DIR}/monasca-agent.service"
-
-
-    echo -e "[Unit]
-Description=Monasca Agent
-
-[Service]
-Type=simple
-User=mon-agent
-Group=mon-agent
-Restart=on-failure
-ExecStart=${BIN_DIR}/supervisord -c /etc/monasca/agent/supervisor.conf -n
-
-[Install]
-WantedBy=multi-user.target" > "${tmp_service_file}"
-
-    sudo cp -f "${tmp_service_file}" "${systemd_file}"
-    sudo chmod 0644 "${systemd_file}"
-    sudo systemctl daemon-reload
-    rm -rf "${tmp_service_file}"
-
-    inf "${systemd_file} created"
-}
 
 function set_attributes() {
 
@@ -223,14 +124,10 @@ MON_AGENT_LOG_DIR="${CUSTOM_LOG_DIR:-$MON_DEFAULT_AGENT_LOG_DIR}"
 
 run_monasca_setup "${MONASCA_SETUP_VARS[@]}"
 
-generate_supervisor_config
-
-create_system_service_file
-
 set_attributes
 
 inf "Start Monasca Agent daemon"
 sudo systemctl daemon-reload
-sudo systemctl stop monasca-agent || true
-sudo systemctl enable monasca-agent
-sudo systemctl start monasca-agent
+sudo systemctl stop monasca-agent.target || true
+sudo systemctl enable monasca-agent.target
+sudo systemctl start monasca-agent.target
