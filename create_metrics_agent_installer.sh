@@ -38,7 +38,7 @@ done
 
 if [ -z "$MONASCA_AGENT_VERSION" ]; then
 	echo "--monasca_agent_version argument is missing"
-	exit 1 
+	exit 1
 fi
 
 MONASCA_AGENT_TMP_DIR="${TMP_DIR}/monasca-agent"
@@ -65,6 +65,8 @@ if [ -z "${UPPER_CONSTRAINTS_FILE}" ]; then
     fi
 else
     inf "Using upper constraints file: ${UPPER_CONSTRAINTS_FILE}"
+    # If you need to build from a git repository instead of PyPI
+    # "${MONASCA_AGENT_TMP_DIR}"/bin/pip install git+https://github.com/openstack/monasca-agent.git@"$MONASCA_AGENT_VERSION" -c "${UPPER_CONSTRAINTS_FILE}"
     "${MONASCA_AGENT_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" monasca-agent=="$MONASCA_AGENT_VERSION"
     for dependencies in "${PIP_DEPENDENCIES[@]}"; do
         "${MONASCA_AGENT_TMP_DIR}"/bin/pip install -c "${UPPER_CONSTRAINTS_FILE}" "$dependencies"
